@@ -166,7 +166,7 @@ function OnboardDialog({ plans, onClose }: { plans: Plan[]; onClose: () => void 
           ownerPassword: form.get("ownerPassword"),
           phone: form.get("phone"),
           timezone: form.get("timezone") || "UTC",
-          currency: form.get("currency") || "USD",
+          currency: form.get("currency") || "INR",
           planId: form.get("planId") || null,
         }),
       });
@@ -226,7 +226,7 @@ function OnboardDialog({ plans, onClose }: { plans: Plan[]; onClose: () => void 
           </div>
           <div className="field">
             <label htmlFor="onboard-currency">Currency</label>
-            <input id="onboard-currency" name="currency" className="input" defaultValue="USD" maxLength={3} />
+            <input id="onboard-currency" name="currency" className="input" defaultValue="INR" maxLength={3} />
           </div>
           <div className="field span-2">
             <label htmlFor="onboard-plan">Plan</label>

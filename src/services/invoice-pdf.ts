@@ -2,16 +2,24 @@ import "server-only";
 import { FileKind } from "@prisma/client";
 import PDFDocument from "pdfkit";
 import path from "node:path";
+import { existsSync } from "node:fs";
 import { prisma } from "@/lib/prisma";
 import { BRAND } from "@/lib/brand";
 import { notFound } from "@/lib/errors";
 import { parseSalonSettings } from "@/lib/settings";
-import { formatMoney, asNumber } from "@/lib/utils";
+import { formatMoney as formatMoneyBase, asNumber } from "@/lib/utils";
 import { readStoredFile, writeGeneratedFile } from "@/lib/storage";
 import type { TenantContext } from "@/lib/auth";
 
-const regularFont = path.join(process.cwd(), "public", "fonts", "NotoSans-Regular.ttf");
-const boldFont = path.join(process.cwd(), "public", "fonts", "NotoSans-Bold.ttf");
+// Look for the bundled fonts in a few places so a different hosting layout cannot break PDFs.
+function findFont(file: string) {
+  const candidates = [
+    path.join(process.cwd(), "public", "fonts", file),
+    path.join("/app", "public", "fonts", file),
+    path.join(process.cwd(), ".next", "standalone", "public", "fonts", file),
+  ];
+  return candidates.find((candidate) => existsSync(candidate)) || null;
+}
 
 async function buildInvoicePdf(invoiceId: string, salonId: string) {
   const invoice = await prisma.invoice.findFirst({
@@ -34,8 +42,16 @@ async function buildInvoicePdf(invoiceId: string, salonId: string) {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
   });
-  doc.registerFont("Body", regularFont);
-  doc.registerFont("Bold", boldFont);
+  const regularFont = findFont("NotoSans-Regular.ttf");
+  const boldFont = findFont("NotoSans-Bold.ttf");
+  const hasFonts = Boolean(regularFont && boldFont);
+  // Built-in fonts cannot draw the rupee sign, so fall back to "Rs." only in that case.
+  doc.registerFont("Body", regularFont || "Helvetica");
+  doc.registerFont("Bold", boldFont || "Helvetica-Bold");
+  const formatMoney = (value: unknown, currency: string, locale: string) => {
+    const text = formatMoneyBase(value, currency, locale);
+    return hasFonts ? text : text.replace(/₹\s?/g, "Rs. ");
+  };
   doc.font("Body").fillColor("#1f2523");
   doc.rect(0, 0, doc.page.width, 10).fill(accent);
   doc.fillColor("#1f2523");
@@ -201,4 +217,15 @@ export async function getInvoicePdfBytes(invoiceId: string, context: TenantConte
   const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, salonId: context.salon.id } });
   if (!invoice) throw notFound("Invoice not found");
   return buildInvoicePdf(invoiceId, context.salon.id);
+}
+
+/** Builds the PDF on the fly (nothing is written to disk) for a direct download. */
+export async function getInvoicePdfDownload(invoiceId: string, context: TenantContext) {
+  const invoice = await prisma.invoice.findFirst({
+    where: { id: invoiceId, salonId: context.salon.id },
+    select: { number: true },
+  });
+  if (!invoice) throw notFound("Invoice not found");
+  const bytes = await buildInvoicePdf(invoiceId, context.salon.id);
+  return { bytes, filename: `bill-${invoice.number}.pdf` };
 }

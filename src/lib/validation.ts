@@ -372,7 +372,7 @@ export const registerInput = z.object({
   password: passwordSchema,
   phone: phoneSchema,
   timezone: z.string().trim().min(1).max(60).default("UTC"),
-  currency: z.string().trim().length(3).toUpperCase().default("USD"),
+  currency: z.string().trim().length(3).toUpperCase().default("INR"),
 });
 
 export const loginInput = z.object({
@@ -400,7 +400,7 @@ export const platformSalonInput = z.object({
   ownerPassword: passwordSchema,
   phone: phoneSchema,
   timezone: z.string().trim().min(1).max(60).default("UTC"),
-  currency: z.string().trim().length(3).toUpperCase().default("USD"),
+  currency: z.string().trim().length(3).toUpperCase().default("INR"),
   planId: nullableId,
 });
 
@@ -440,4 +440,11 @@ export const platformSettingsUpdate = z.object({
   supportEmail: emailSchema,
   trialDays: z.number().int().min(0).max(365),
   notice: z.string().trim().max(300),
+});
+
+export const forgotPasswordInput = z.object({ email: emailSchema });
+
+export const resetPasswordInput = z.object({
+  token: z.string().trim().min(20).max(200),
+  password: passwordSchema,
 });

@@ -1,5 +1,7 @@
 "use client";
 
+import { CompanyLogo } from "@/components/brand/company-logo";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -54,10 +56,9 @@ export function InviteForm({
   if (accountExists && !signedIn) {
     return (
       <div className="auth-card">
-        <div className="public-brand" style={{ marginBottom: 28, color: "var(--ink)" }}>
-          <span className="brand-mark">S</span>
-          Salon SaaS
-        </div>
+        <div style={{ marginBottom: 28 }}>
+        <CompanyLogo height={34} />
+      </div>
         <h1>You&apos;re invited.</h1>
         <p className="auth-sub">
           {salonName} invited <strong>{email}</strong> to join as {role.toLowerCase()}.
@@ -72,9 +73,8 @@ export function InviteForm({
 
   return (
     <div className="auth-card">
-      <div className="public-brand" style={{ marginBottom: 28, color: "var(--ink)" }}>
-        <span className="brand-mark">S</span>
-        Salon SaaS
+      <div style={{ marginBottom: 28 }}>
+        <CompanyLogo height={34} />
       </div>
       <h1>Join {salonName}.</h1>
       <p className="auth-sub">
@@ -90,7 +90,7 @@ export function InviteForm({
             </div>
             <div className="field" style={{ marginTop: 14 }}>
               <label htmlFor="password">Create a password</label>
-              <input id="password" name="password" type="password" className="input" required autoComplete="new-password" placeholder="At least 10 characters" />
+              <PasswordInput id="password" name="password" className="input" required autoComplete="new-password" placeholder="At least 10 characters" />
             </div>
           </>
         ) : (

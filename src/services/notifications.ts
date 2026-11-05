@@ -48,6 +48,22 @@ async function sendTwilio(channel: NotificationChannel, to: string, body: string
   return payload.sid || null;
 }
 
+export function emailIsConfigured() {
+  return Boolean(env.SMTP_HOST && env.MAIL_FROM);
+}
+
+/** Plain system email (such as a password reset link). Returns false if email is not set up or fails. */
+export async function sendSystemEmail(input: { to: string; subject: string; text: string }) {
+  const transport = emailTransport();
+  if (!transport) return false;
+  try {
+    const result = await transport.sendMail({ from: env.MAIL_FROM, to: input.to, subject: input.subject, text: input.text });
+    return Boolean(result.accepted?.length);
+  } catch {
+    return false;
+  }
+}
+
 export async function sendNotification(input: {
   salonId: string;
   templateKey: string;

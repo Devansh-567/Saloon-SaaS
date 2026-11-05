@@ -38,6 +38,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
           <StatusBadge status={invoice.status} />
         </div>
         <InvoiceActions
+          salonName={context.salon.name}
           invoice={{
             id: invoice.id,
             number: invoice.number,

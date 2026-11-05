@@ -3284,7 +3284,7 @@ h1 {
   td,
   th {
     min-width: 0;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
 
   .table-wrap {
@@ -3315,4 +3315,46 @@ h1 {
   .page-head h1 {
     font-size: 1.5rem;
   }
+}
+
+/* Password box with show/hide eye */
+.password-field {
+  position: relative;
+}
+
+.password-field .input {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: var(--ink);
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Icons inside menu rows and buttons never grow or shrink */
+.dropdown-item svg,
+.nav-link svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
 }

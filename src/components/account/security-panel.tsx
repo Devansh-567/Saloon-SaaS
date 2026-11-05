@@ -1,5 +1,6 @@
 "use client";
 
+import { PasswordInput } from "@/components/ui/password-input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiRequest, errorMessage } from "@/lib/client";
@@ -127,16 +128,16 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
             <div className="form-grid">
               <div className="field span-2">
                 <label htmlFor="currentPassword">Current password</label>
-                <input id="currentPassword" name="currentPassword" type="password" className="input" required autoComplete="current-password" />
+                <PasswordInput id="currentPassword" name="currentPassword" className="input" required autoComplete="current-password" />
               </div>
               <div className="field">
                 <label htmlFor="newPassword">New password</label>
-                <input id="newPassword" name="newPassword" type="password" className="input" required autoComplete="new-password" minLength={10} />
+                <PasswordInput id="newPassword" name="newPassword" className="input" required autoComplete="new-password" minLength={10} />
                 <small>Uppercase, lowercase, number, and symbol.</small>
               </div>
               <div className="field">
                 <label htmlFor="confirmPassword">Confirm new password</label>
-                <input id="confirmPassword" name="confirmPassword" type="password" className="input" required autoComplete="new-password" />
+                <PasswordInput id="confirmPassword" name="confirmPassword" className="input" required autoComplete="new-password" />
               </div>
             </div>
             <div className="form-actions">
@@ -166,7 +167,7 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
                 <form onSubmit={disableMfa} className="form-grid one">
                   <div className="field">
                     <label htmlFor="disable-password">Password</label>
-                    <input id="disable-password" name="password" type="password" className="input" required autoComplete="current-password" />
+                    <PasswordInput id="disable-password" name="password" className="input" required autoComplete="current-password" />
                   </div>
                   <div className="field">
                     <label htmlFor="disable-code">Authenticator or recovery code</label>

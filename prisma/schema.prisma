@@ -176,6 +176,7 @@ model User {
   ownedSalons      Salon[]      @relation("SalonOwner")
   memberships      Membership[]
   sessions         Session[]
+  passwordResets   PasswordResetToken[]
   invitesSent     Invitation[] @relation("InvitedBy")
   auditLogs        AuditLog[]
   uploadedFiles    FileAsset[]
@@ -223,8 +224,8 @@ model Salon {
   phone          String
   address        String?
   timezone       String           @default("UTC")
-  currency       String           @default("USD")
-  locale         String           @default("en-US")
+  currency       String           @default("INR")
+  locale         String           @default("en-IN")
   status         SalonStatus      @default(ACTIVE)
   ownerId        String
   owner          User             @relation("SalonOwner", fields: [ownerId], references: [id], onDelete: Restrict)
@@ -972,5 +973,18 @@ model RateLimit {
   windowStart DateTime
   expiresAt   DateTime
 
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
   @@index([expiresAt])
 }

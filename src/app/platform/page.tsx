@@ -52,7 +52,7 @@ export default async function PlatformOverviewPage() {
             <span>MRR</span>
             <Icon name="money" />
           </div>
-          <div className="stat-value">{formatMoney(data.mrr, "USD", "en-US")}</div>
+          <div className="stat-value">{formatMoney(data.mrr, "INR", "en-IN")}</div>
           <div className="stat-foot">Active plans at list price</div>
         </div>
         <div className="stat-card">

@@ -1,5 +1,7 @@
 "use client";
 
+import { CompanyLogo } from "@/components/brand/company-logo";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -68,9 +70,8 @@ export function RegisterForm() {
 
   return (
     <div className="auth-card">
-      <div className="public-brand" style={{ marginBottom: 24, color: "var(--ink)" }}>
-        <span className="brand-mark">S</span>
-        Salon SaaS
+      <div style={{ marginBottom: 24 }}>
+        <CompanyLogo height={34} />
       </div>
       <h1>Create your workspace.</h1>
       <p className="auth-sub">Start with the salon, then add your services, stock, and team.</p>
@@ -95,7 +96,7 @@ export function RegisterForm() {
           </div>
           <div className="field span-2">
             <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" className="input" required autoComplete="new-password" placeholder="At least 10 characters" />
+            <PasswordInput id="password" name="password" className="input" required autoComplete="new-password" placeholder="At least 10 characters" />
             <small>Use uppercase, lowercase, a number, and a symbol.</small>
           </div>
           <div className="field">
@@ -110,7 +111,7 @@ export function RegisterForm() {
           </div>
           <div className="field">
             <label htmlFor="currency">Currency</label>
-            <select id="currency" name="currency" className="select" defaultValue="USD">
+            <select id="currency" name="currency" className="select" defaultValue="INR">
               {["USD", "EUR", "GBP", "CAD", "AUD", "INR", "AED", "SAR", "NGN", "BRL", "JPY"].map((currency) => (
                 <option key={currency} value={currency}>
                   {currency}

@@ -6,7 +6,7 @@ import { zonedDateInput, zonedDayBounds, zonedStartOfDay } from "@/lib/timezone"
 import { formatMoney, paymentMethodLabel } from "@/lib/utils";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { EmptyState } from "@/components/ui/empty";
-import { Icon } from "@/components/ui/icons";
+import { ReportFilters } from "@/components/reports/report-filters";
 
 export const metadata: Metadata = { title: "Reports" };
 export const dynamic = "force-dynamic";
@@ -55,6 +55,8 @@ export default async function ReportsPage({
   } else if (range === "custom") {
     if (params.from && /^\d{4}-\d{2}-\d{2}$/.test(params.from)) fromDate = params.from;
     if (params.to && /^\d{4}-\d{2}-\d{2}$/.test(params.to)) toDate = params.to;
+    // Never let the start date be after the end date
+    if (fromDate > toDate) [fromDate, toDate] = [toDate, fromDate];
   }
 
   const from = zonedStartOfDay(fromDate, context.salon.timezone);
@@ -78,27 +80,7 @@ export default async function ReportsPage({
       </div>
 
       <section className="card">
-        <form className="toolbar" method="get">
-          <div className="field">
-            <label className="field-label" htmlFor="range">Period</label>
-            <select id="range" name="range" className="select" defaultValue={range}>
-              {RANGES.map((item) => (
-                <option key={item.id} value={item.id}>{item.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
-            <label className="field-label" htmlFor="from">From</label>
-            <input id="from" name="from" type="date" className="input" defaultValue={fromDate} />
-          </div>
-          <div className="field">
-            <label className="field-label" htmlFor="to">To</label>
-            <input id="to" name="to" type="date" className="input" defaultValue={toDate} />
-          </div>
-          <button type="submit" className="btn btn-secondary">
-            <Icon name="filter" /> Apply
-          </button>
-        </form>
+        <ReportFilters range={range} from={fromDate} to={toDate} />
       </section>
 
       <div className="grid-4">

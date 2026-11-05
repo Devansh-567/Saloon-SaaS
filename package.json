@@ -18,6 +18,7 @@
     "db:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "admin:create": "tsx scripts/create-super-admin.ts",
+    "admin:reset-password": "tsx scripts/reset-password.ts",
     "setup": "node scripts/init-env.mjs",
     "backup": "node scripts/backup.mjs",
     "postinstall": "prisma generate"

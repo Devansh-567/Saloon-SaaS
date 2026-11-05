@@ -1,5 +1,7 @@
 "use client";
 
+import { CompanyLogo } from "@/components/brand/company-logo";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,9 +37,8 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
 
   return (
     <div className="auth-card">
-      <div className="public-brand" style={{ marginBottom: 28, color: "var(--ink)" }}>
-        <span className="brand-mark">S</span>
-        Salon SaaS
+      <div style={{ marginBottom: 28 }}>
+        <CompanyLogo height={34} />
       </div>
       <h1>Welcome back.</h1>
       <p className="auth-sub">Sign in to run the day from one place.</p>
@@ -49,17 +50,20 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
         </div>
         <div className="field" style={{ marginTop: 14 }}>
           <label htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" className="input" autoComplete="current-password" required placeholder="Your password" />
+          <PasswordInput id="password" name="password" className="input" autoComplete="current-password" required placeholder="Your password" />
         </div>
-        <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 20 }} disabled={pending}>
+        <div style={{ textAlign: "right", marginTop: 8 }}>
+          <Link href="/forgot-password" className="link">Forgot password?</Link>
+        </div>
+        <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 14 }} disabled={pending}>
           {pending ? "Signing in…" : "Sign in"}
         </button>
       </form>
       <p className="auth-footer">
-        New to Salon SaaS? <Link href="/register" className="link">Create your salon workspace</Link>
+        New here? <Link href="/register" className="link">Create your salon account</Link>
       </p>
       <div className="demo-note">
-        Access is role-based. If you were invited to an existing salon, use the email address that received the invitation.
+        Invited by your salon? Sign in with the email address that received the invitation.
       </div>
     </div>
   );

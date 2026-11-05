@@ -20,7 +20,7 @@ export function initials(name: string) {
     .join("");
 }
 
-export function formatMoney(value: unknown, currency = "USD", locale = "en-US") {
+export function formatMoney(value: unknown, currency = "INR", locale = "en-IN") {
   return new Intl.NumberFormat(locale, { style: "currency", currency }).format(asNumber(value));
 }
 

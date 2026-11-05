@@ -59,8 +59,8 @@ export function PlansPanel({ plans }: { plans: PlanRow[] }) {
                       {plan.description ? ` · ${plan.description}` : ""}
                     </div>
                   </td>
-                  <td className="num">{formatMoney(plan.monthlyPrice, "USD", "en-US")}</td>
-                  <td className="num hide-mobile">{plan.yearlyPrice === null ? "—" : formatMoney(plan.yearlyPrice, "USD", "en-US")}</td>
+                  <td className="num">{formatMoney(plan.monthlyPrice, "INR", "en-IN")}</td>
+                  <td className="num hide-mobile">{plan.yearlyPrice === null ? "—" : formatMoney(plan.yearlyPrice, "INR", "en-IN")}</td>
                   <td className="hide-mobile">
                     {plan.limits.maxStaff || "∞"} staff · {plan.limits.maxBranches || "∞"} branches
                   </td>
@@ -175,11 +175,11 @@ function PlanDialog({ plan, onClose }: { plan: PlanRow | null; onClose: () => vo
             <input id="plan-slug" className="input" value={slug} onChange={(event) => setSlug(slugify(event.target.value))} required pattern="[a-z0-9-]+" />
           </div>
           <div className="field">
-            <label htmlFor="plan-monthly">Monthly price (USD)</label>
+            <label htmlFor="plan-monthly">Monthly price (INR)</label>
             <input id="plan-monthly" name="monthlyPrice" type="number" min={0} step="0.01" className="input" defaultValue={plan?.monthlyPrice ?? 0} required />
           </div>
           <div className="field">
-            <label htmlFor="plan-yearly">Yearly price (USD)</label>
+            <label htmlFor="plan-yearly">Yearly price (INR)</label>
             <input id="plan-yearly" name="yearlyPrice" type="number" min={0} step="0.01" className="input" defaultValue={plan?.yearlyPrice ?? ""} />
           </div>
           <div className="field">

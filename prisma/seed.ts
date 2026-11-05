@@ -178,8 +178,8 @@ async function demoSalon() {
       phone: "+15550101000",
       address: "48 Mariners Lane, Brooklyn, NY",
       timezone: "America/New_York",
-      currency: "USD",
-      locale: "en-US",
+      currency: "INR",
+      locale: "en-IN",
       ownerId: owner.id,
       settings: {
         ...DEFAULT_SALON_SETTINGS,

@@ -26,7 +26,9 @@ export function InvoiceActions({
   canSend,
   currency,
   locale,
+  salonName,
 }: {
+  salonName: string;
   invoice: Invoice;
   canWrite: boolean;
   canRefund: boolean;
@@ -42,7 +44,53 @@ export function InvoiceActions({
   const [sendOpen, setSendOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [sharing, setSharing] = useState(false);
   const closed = invoice.status === "VOID";
+
+  // Opens WhatsApp so the owner can pick ANY chat or contact. No customer number needed.
+  async function shareOnWhatsApp() {
+    setSharing(true);
+    const lines = [
+      `Bill ${invoice.number} from ${salonName}`,
+      `Total: ${formatMoney(invoice.total, currency, locale)}`,
+      `Paid: ${formatMoney(invoice.netPaid, currency, locale)}`,
+      invoice.balance > 0 ? `Balance to pay: ${formatMoney(invoice.balance, currency, locale)}` : "Fully paid. Thank you!",
+    ];
+    const text = lines.join("\n");
+    let blob: Blob | null = null;
+    try {
+      const response = await fetch(`/api/invoices/${invoice.id}/pdf`, { credentials: "same-origin" });
+      if (response.ok) blob = await response.blob();
+      if (blob) {
+        const file = new File([blob], `bill-${invoice.number}.pdf`, { type: "application/pdf" });
+        if (typeof navigator !== "undefined" && navigator.canShare?.({ files: [file] })) {
+          // Phone: opens the share sheet. Choose WhatsApp, then any person or group.
+          await navigator.share({ files: [file], text, title: `Bill ${invoice.number}` });
+          setSharing(false);
+          return;
+        }
+      }
+    } catch (shareError) {
+      if (shareError instanceof DOMException && shareError.name === "AbortError") {
+        setSharing(false);
+        return;
+      }
+    }
+    // Computer (or a phone that cannot share files): open WhatsApp with the message, save the PDF to attach.
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `bill-${invoice.number}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      toast.success("Bill PDF saved. Attach it in WhatsApp if you want to send the file.");
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    setSharing(false);
+  }
 
   async function recordPayment(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -135,28 +183,31 @@ export function InvoiceActions({
     <>
       <div className="page-actions no-print">
         <a className="btn btn-secondary" href={`/api/invoices/${invoice.id}/pdf`} target="_blank" rel="noreferrer">
-          <Icon name="download" /> PDF
+          <Icon name="download" /> Download Bill
         </a>
+        <button type="button" className="btn btn-secondary" onClick={shareOnWhatsApp} disabled={closed || sharing}>
+          <Icon name="send" /> {sharing ? "Opening…" : "Share on WhatsApp"}
+        </button>
         {canSend ? (
           <button type="button" className="btn btn-secondary" onClick={() => setSendOpen(true)} disabled={closed}>
-            <Icon name="send" /> Send
+            <Icon name="mail" /> Email / Text
           </button>
         ) : null}
         {canWrite && !closed ? (
           invoice.balance > 0 ? (
             <button type="button" className="btn btn-primary" onClick={() => setPaymentOpen(true)}>
-              <Icon name="money" /> Record payment
+              <Icon name="money" /> Add Payment
             </button>
           ) : null
         ) : null}
         {canRefund && !closed && invoice.netPaid > 0 ? (
           <button type="button" className="btn btn-secondary" onClick={() => setRefundOpen(true)}>
-            <Icon name="refresh" /> Refund
+            <Icon name="refresh" /> Give Money Back
           </button>
         ) : null}
         {canWrite && !closed && invoice.netPaid <= 0 ? (
           <button type="button" className="btn btn-soft-danger" onClick={() => setVoidOpen(true)}>
-            <Icon name="ban" /> Void
+            <Icon name="ban" /> Cancel Bill
           </button>
         ) : null}
       </div>
@@ -259,15 +310,15 @@ export function InvoiceActions({
         }
       >
         <div style={{ display: "grid", gap: 8 }}>
-          {(["EMAIL", "SMS", "WHATSAPP"] as const).map((channel) => (
+          {(["EMAIL", "SMS"] as const).map((channel) => (
             <button key={channel} type="button" className="btn btn-secondary" style={{ justifyContent: "space-between" }} onClick={() => send(channel)} disabled={pending}>
-              <span>{channel === "EMAIL" ? "Email the bill" : channel === "SMS" ? "Send a text message" : "Send on WhatsApp"}</span>
+              <span>{channel === "EMAIL" ? "Email the bill" : "Send a text message"}</span>
               <Icon name={channel === "EMAIL" ? "mail" : "send"} />
             </button>
           ))}
           <p className="hint" style={{ margin: "6px 0 0" }}>
-            Delivery depends on the provider configured by the platform. Accepted means the provider took the message, not that
-            the customer has read it.
+            This sends to the customer&apos;s saved email or phone number. To send on WhatsApp to anyone, use
+            &quot;Share on WhatsApp&quot;.
           </p>
         </div>
       </Modal>

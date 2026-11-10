@@ -1,6 +1,6 @@
 "use client";
 
-import { CompanyLogo } from "@/components/brand/company-logo";
+import { AuthBrand } from "@/components/brand/auth-brand";
 import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -37,9 +37,7 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
 
   return (
     <div className="auth-card">
-      <div style={{ marginBottom: 28 }}>
-        <CompanyLogo height={34} />
-      </div>
+      <AuthBrand />
       <h1>Welcome back.</h1>
       <p className="auth-sub">Sign in to run the day from one place.</p>
       {error ? <div className="alert alert-error">{error}</div> : null}

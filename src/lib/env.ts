@@ -25,6 +25,9 @@ const envSchema = z.object({
   TWILIO_AUTH_TOKEN: z.string().optional(),
   TWILIO_SMS_FROM: z.string().optional(),
   TWILIO_WHATSAPP_FROM: z.string().optional(),
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
   TRIAL_DAYS: z.coerce.number().int().positive().default(14),
 });
 

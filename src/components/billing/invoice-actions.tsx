@@ -27,8 +27,10 @@ export function InvoiceActions({
   currency,
   locale,
   salonName,
+  onlinePayments,
 }: {
   salonName: string;
+  onlinePayments: boolean;
   invoice: Invoice;
   canWrite: boolean;
   canRefund: boolean;
@@ -45,6 +47,35 @@ export function InvoiceActions({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [sharing, setSharing] = useState(false);
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [payLink, setPayLink] = useState<{ url: string; amount: number } | null>(null);
+
+  async function createPayLink() {
+    setLinkBusy(true);
+    try {
+      setPayLink(await apiRequest<{ url: string; amount: number }>(`/api/invoices/${invoice.id}/payment-link`, { method: "POST" }));
+    } catch (linkError) {
+      toast.error(errorMessage(linkError));
+    } finally {
+      setLinkBusy(false);
+    }
+  }
+
+  async function copyPayLink() {
+    if (!payLink) return;
+    try {
+      await navigator.clipboard.writeText(payLink.url);
+      toast.success("Link copied.");
+    } catch {
+      toast.error("Could not copy. Please select the link and copy it.");
+    }
+  }
+
+  function sharePayLinkOnWhatsApp() {
+    if (!payLink) return;
+    const text = `Bill ${invoice.number} from ${salonName}\nAmount to pay: ${formatMoney(payLink.amount, currency, locale)}\nPay online (UPI, card or net banking): ${payLink.url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+  }
   const closed = invoice.status === "VOID";
 
   // Opens WhatsApp so the owner can pick ANY chat or contact. No customer number needed.
@@ -185,6 +216,11 @@ export function InvoiceActions({
         <a className="btn btn-secondary" href={`/api/invoices/${invoice.id}/pdf`} target="_blank" rel="noreferrer">
           <Icon name="download" /> Download Bill
         </a>
+        {onlinePayments && !closed && invoice.balance > 0 ? (
+          <button type="button" className="btn btn-primary" onClick={createPayLink} disabled={linkBusy}>
+            <Icon name="card" /> {linkBusy ? "Please wait…" : "Get Payment Link"}
+          </button>
+        ) : null}
         <button type="button" className="btn btn-secondary" onClick={shareOnWhatsApp} disabled={closed || sharing}>
           <Icon name="send" /> {sharing ? "Opening…" : "Share on WhatsApp"}
         </button>
@@ -296,6 +332,38 @@ export function InvoiceActions({
             </label>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        open={Boolean(payLink)}
+        onClose={() => setPayLink(null)}
+        title="Payment link ready"
+        description={payLink ? `The customer can pay ${formatMoney(payLink.amount, currency, locale)} by UPI, card or net banking.` : ""}
+        footer={
+          <button type="button" className="btn btn-secondary" onClick={() => setPayLink(null)}>
+            Close
+          </button>
+        }
+      >
+        {payLink ? (
+          <div style={{ display: "grid", gap: 12 }}>
+            <input className="input" readOnly value={payLink.url} onFocus={(event) => event.currentTarget.select()} aria-label="Payment link" />
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button type="button" className="btn btn-secondary" onClick={copyPayLink}>
+                <Icon name="file" /> Copy link
+              </button>
+              <button type="button" className="btn btn-primary" onClick={sharePayLinkOnWhatsApp}>
+                <Icon name="send" /> Send on WhatsApp
+              </button>
+              <a className="btn btn-ghost" href={payLink.url} target="_blank" rel="noreferrer">
+                Open
+              </a>
+            </div>
+            <p className="muted" style={{ fontSize: 12.5, margin: 0 }}>
+              When the customer pays, this bill updates by itself. You do not need to add the payment.
+            </p>
+          </div>
+        ) : null}
       </Modal>
 
       <Modal

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { apiRequest, errorMessage } from "@/lib/client";
-import { CompanyLogo } from "@/components/brand/company-logo";
+import { AuthBrand } from "@/components/brand/auth-brand";
 
 export function ForgotPasswordForm() {
   const [pending, setPending] = useState(false);
@@ -29,9 +29,7 @@ export function ForgotPasswordForm() {
 
   return (
     <div className="auth-card">
-      <div style={{ marginBottom: 28 }}>
-        <CompanyLogo height={34} />
-      </div>
+      <AuthBrand />
       <h1>Forgot your password?</h1>
       <p className="auth-sub">Enter your email and we will send you a link to choose a new password.</p>
       {error ? <div className="alert alert-error">{error}</div> : null}

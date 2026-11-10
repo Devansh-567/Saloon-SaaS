@@ -1,3 +1,4 @@
+import { onlinePaymentsEnabled } from "@/services/online-payments";
 import { BRAND } from "@/lib/brand";
 import { PoweredBy } from "@/components/brand/company-logo";
 import type { Metadata } from "next";
@@ -39,6 +40,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
         </div>
         <InvoiceActions
           salonName={context.salon.name}
+          onlinePayments={onlinePaymentsEnabled() && context.salon.currency === "INR"}
           invoice={{
             id: invoice.id,
             number: invoice.number,

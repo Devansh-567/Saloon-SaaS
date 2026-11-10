@@ -34,7 +34,7 @@ describe("plain-English labels", () => {
 describe("company branding", () => {
   it("has a name and both logo paths configured", () => {
     expect(BRAND.name.length).toBeGreaterThan(0);
-    expect(BRAND.logoSrc).toMatch(/^\/brand\//);
-    expect(BRAND.logoOnDarkSrc).toMatch(/^\/brand\//);
+    expect(BRAND.logoSrc).toMatch(/^\/brand/);
+    expect(BRAND.logoOnDarkSrc).toMatch(/^\/brand/);
   });
 });

@@ -1,12 +1,22 @@
-COMPANY LOGO — how to change it
-================================
-1. Replace  logo.svg        with your logo for LIGHT backgrounds (dark/coloured logo).
-2. Replace  logo-light.svg  with your logo for DARK backgrounds (white/light logo).
-   (PNG also works: save as logo.png / logo-light.png and update the two paths in src/lib/brand.ts.)
-3. Edit src/lib/brand.ts to set your company name, tagline and website.
-4. Rebuild / restart the app.
+COMPANY LOGO: where to put it and what to call it
+==================================================
+Put ONE file in this folder (public/brand/) with exactly this name:
 
-Best size: wide logo, about 180 x 44 pixels (or 2x for sharp screens), transparent background.
+    logo.png        <- best choice (transparent background)
+  or  logo.webp / logo.jpg / logo.svg
 
-Where it appears: login & sign-up pages, the public home page, the side menu footer
-("Powered by"), the platform admin menu, and a small footer on bills and PDF receipts.
+The first one found is used, in this order: logo.png, logo.webp, logo.jpg, logo.svg.
+(The grey "YOUR LOGO HERE" logo.svg is only a placeholder. Adding logo.png replaces it.)
+
+Best size: a wide logo, about 600 x 150 pixels, transparent background.
+Use a dark/coloured logo: it appears on white cards. On dark panels it is
+automatically placed on a small white plate, so one file is enough.
+
+Then set your company name in  src/lib/brand.ts  and redeploy.
+
+Where it appears: the sign-in page (top of the card and the side panel), the side
+menu footer ("Powered by"), the platform admin menu, and bills / PDF receipts.
+
+OPTIONAL: sign-in background photo
+Add  login-bg.jpg  (about 1600 x 1000, a calm salon photo) to this folder and it
+becomes the soft background behind the sign-in card. Without it, a clean gradient is used.

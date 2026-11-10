@@ -1,6 +1,6 @@
 "use client";
 
-import { CompanyLogo } from "@/components/brand/company-logo";
+import { AuthBrand } from "@/components/brand/auth-brand";
 import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -56,9 +56,7 @@ export function InviteForm({
   if (accountExists && !signedIn) {
     return (
       <div className="auth-card">
-        <div style={{ marginBottom: 28 }}>
-        <CompanyLogo height={34} />
-      </div>
+        <AuthBrand />
         <h1>You&apos;re invited.</h1>
         <p className="auth-sub">
           {salonName} invited <strong>{email}</strong> to join as {role.toLowerCase()}.
@@ -73,9 +71,7 @@ export function InviteForm({
 
   return (
     <div className="auth-card">
-      <div style={{ marginBottom: 28 }}>
-        <CompanyLogo height={34} />
-      </div>
+      <AuthBrand />
       <h1>Join {salonName}.</h1>
       <p className="auth-sub">
         You were invited as {role.toLowerCase()} using <strong>{email}</strong>.

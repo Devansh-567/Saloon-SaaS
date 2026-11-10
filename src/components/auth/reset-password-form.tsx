@@ -6,7 +6,7 @@ import { useState } from "react";
 import { apiRequest, errorMessage } from "@/lib/client";
 import { useToast } from "@/components/ui/toast";
 import { PasswordInput } from "@/components/ui/password-input";
-import { CompanyLogo } from "@/components/brand/company-logo";
+import { AuthBrand } from "@/components/brand/auth-brand";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
@@ -39,9 +39,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   return (
     <div className="auth-card">
-      <div style={{ marginBottom: 28 }}>
-        <CompanyLogo height={34} />
-      </div>
+      <AuthBrand />
       <h1>Choose a new password</h1>
       <p className="auth-sub">At least 12 characters, with a letter and a number.</p>
       {!token ? (

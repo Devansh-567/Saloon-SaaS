@@ -1,6 +1,6 @@
 "use client";
 
-import { CompanyLogo } from "@/components/brand/company-logo";
+import { AuthBrand } from "@/components/brand/auth-brand";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,9 +35,7 @@ export function MfaForm() {
 
   return (
     <div className="auth-card">
-      <div style={{ marginBottom: 28 }}>
-        <CompanyLogo height={34} />
-      </div>
+      <AuthBrand />
       <h1>Verify it&apos;s you.</h1>
       <p className="auth-sub">Enter the six-digit code from your authenticator app, or use one of your recovery codes.</p>
       {error ? <div className="alert alert-error">{error}</div> : null}

@@ -1,3 +1,4 @@
+import { AuthBrand } from "@/components/brand/auth-brand";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getVerifiedViewer } from "@/lib/auth";
@@ -25,10 +26,7 @@ export default async function InvitationPage({ params }: { params: Promise<{ tok
   } catch (error) {
     return (
       <div className="auth-card">
-        <div className="public-brand" style={{ marginBottom: 28, color: "var(--ink)" }}>
-          <span className="brand-mark">S</span>
-          Salon SaaS
-        </div>
+        <AuthBrand />
         <h1>Invitation unavailable.</h1>
         <p className="auth-sub">{error instanceof Error ? error.message : "This invitation link cannot be used."}</p>
         <Link href="/login" className="btn btn-primary btn-block">

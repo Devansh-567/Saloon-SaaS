@@ -7,7 +7,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   return withApi(request, async () => {
     const context = await requireApiTenant("billing.read");
     const { id } = await params;
-    // Built on the fly: works on hosts where files cannot be saved permanently.
     const { bytes, filename } = await getInvoicePdfDownload(id, context);
     const inline = request.nextUrl.searchParams.get("view") === "1";
     return new NextResponse(new Uint8Array(bytes), {

@@ -124,15 +124,12 @@ export const checkoutPaymentInput = z.object({
 });
 
 export const invoiceInput = z.object({
-  // Walk-in customers are allowed: leave customerId empty.
   customerId: nullableId,
   branchId: z.string().cuid(),
   appointmentId: nullableId,
   discount: z.number().min(0).default(0),
   notes: optionalText,
-  // Optional payments taken at checkout (supports split payments).
   payments: z.array(checkoutPaymentInput).max(5).default([]),
-  // Client-generated key so a double-click / retry cannot create two bills.
   idempotencyKey: z.string().trim().min(8).max(80).optional().nullable(),
   items: z
     .array(
@@ -159,7 +156,6 @@ export const refundInput = z.object({
   amount: z.number().positive(),
   method: z.enum(["CASH", "CARD", "UPI", "BANK", "OTHER"]),
   reason: z.string().trim().min(2).max(500),
-  // Put sold products back in stock (only allowed for a full refund).
   restockProducts: z.boolean().default(false),
 });
 
@@ -176,8 +172,6 @@ export const productInput = z.object({
   unit: z.string().trim().min(1).max(30).default("unit"),
   active: z.boolean().default(true),
 });
-
-export const productUpdate = productInput.partial().refine((data) => Object.values(data).some((v) => v !== undefined), "No changes supplied");
 
 export const stockAdjustmentInput = z.object({
   productId: z.string().cuid(),
@@ -305,11 +299,6 @@ export const inviteInput = z.object({
   commissionRate: z.number().min(0).max(100).default(0),
 });
 
-export const acceptInviteInput = z.object({
-  name: z.string().trim().min(2).max(120),
-  password: passwordSchema,
-});
-
 export const membershipUpdate = z
   .object({
     role: z.enum(["ADMIN", "MANAGER", "RECEPTIONIST", "STAFF"]).optional(),
@@ -363,7 +352,6 @@ export const branchInput = z.object({
 });
 
 export const branchUpdateInput = branchInput.partial().extend({ active: z.boolean().optional() });
-export const expenseVoidInput = z.object({ void: z.literal(true) });
 
 export const registerInput = z.object({
   salonName: z.string().trim().min(2).max(120),

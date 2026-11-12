@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/brand";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { ToastProvider } from "@/components/ui/toast";
@@ -23,11 +24,11 @@ const themeScript = `(function(){try{var stored=localStorage.getItem("salon-them
 
 export const metadata: Metadata = {
   title: {
-    default: "Salon SaaS",
-    template: "%s · Salon SaaS",
+    default: BRAND.name,
+    template: `%s · ${BRAND.name}`,
   },
-  description: "Salon operations, scheduling, billing, inventory, and team management in one workspace.",
-  applicationName: "Salon SaaS",
+  description: BRAND.description,
+  applicationName: BRAND.name,
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icons/icon-192.png",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "Salon SaaS",
+    title: BRAND.name,
     statusBarStyle: "default",
   },
 };

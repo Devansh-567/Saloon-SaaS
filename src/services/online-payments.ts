@@ -23,10 +23,6 @@ function authHeader() {
 
 type PaymentLinkResponse = { id: string; short_url: string; status: string };
 
-/**
- * Creates (or re-uses) a Razorpay Payment Link for the amount still to pay on a bill.
- * The customer pays by UPI / card / netbanking; the webhook then records the payment.
- */
 export async function createPaymentLink(context: TenantContext, invoiceId: string) {
   if (!onlinePaymentsEnabled()) throw badRequest("Online payments are not switched on yet. Add the Razorpay keys first.");
   const invoice = await prisma.invoice.findFirst({
@@ -55,7 +51,6 @@ export async function createPaymentLink(context: TenantContext, invoiceId: strin
     amount: Math.round(balance * 100),
     currency: "INR",
     accept_partial: false,
-    // Must be unique for every link, so add a time stamp.
     reference_id: `${invoice.id}-${Date.now().toString(36)}`.slice(0, 40),
     description: `Bill ${invoice.number} - ${context.salon.name}`.slice(0, 250),
     expire_by: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
@@ -116,7 +111,6 @@ type WebhookEvent = {
   };
 };
 
-/** Records a paid Razorpay link on the bill. Safe to receive more than once (Razorpay retries). */
 export async function handleRazorpayEvent(event: WebhookEvent) {
   if (event.event !== "payment_link.paid") return { handled: false };
   const link = event.payload?.payment_link?.entity;

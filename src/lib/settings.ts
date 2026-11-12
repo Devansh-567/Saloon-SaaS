@@ -1,3 +1,4 @@
+import { BRAND } from "./brand";
 import { z } from "zod";
 
 export const salonSettingsSchema = z.object({
@@ -21,7 +22,7 @@ export function parseSalonSettings(value: unknown): SalonSettings {
 }
 
 export const platformSettingsSchema = z.object({
-  platformName: z.string().min(2).max(80).default("Salon SaaS"),
+  platformName: z.string().min(2).max(80).default(BRAND.name),
   supportEmail: z.union([z.literal(""), z.string().email()]).default(""),
   trialDays: z.number().int().min(0).max(365).default(14),
   notice: z.string().max(300).default(""),

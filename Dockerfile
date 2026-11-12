@@ -20,7 +20,7 @@ RUN npx prisma generate && npm run build
 
 FROM node:24-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0 UV_THREADPOOL_SIZE=16
 RUN addgroup -S nodejs && adduser -S nextjs -G nodejs && mkdir -p /data/storage && chown -R nextjs:nodejs /data/storage
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static

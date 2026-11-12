@@ -54,7 +54,6 @@ export function InvoiceBuilder({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [payments, setPayments] = useState<PaymentRow[]>([]);
-  // One key per bill screen: a double tap or network retry can never create two bills.
   const idempotencyKey = useRef(
     typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `bill-${Date.now()}-${Math.random().toString(36).slice(2)}`,
   );

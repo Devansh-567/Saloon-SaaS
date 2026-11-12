@@ -26,8 +26,7 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
       });
       toast.success(result.mfaRequired ? "Password verified. Enter your authenticator code." : "Welcome back.");
       const target = !result.mfaRequired && next && next.startsWith("/") && !next.startsWith("//") ? next : result.redirectTo;
-      router.push(target);
-      router.refresh();
+      router.replace(target);
     } catch (err) {
       setError(errorMessage(err));
     } finally {

@@ -52,7 +52,6 @@ export function emailIsConfigured() {
   return Boolean(env.SMTP_HOST && env.MAIL_FROM);
 }
 
-/** Plain system email (such as a password reset link). Returns false if email is not set up or fails. */
 export async function sendSystemEmail(input: { to: string; subject: string; text: string }) {
   const transport = emailTransport();
   if (!transport) return false;
@@ -171,12 +170,4 @@ export async function sendInvoiceNotification(context: TenantContext, invoiceId:
       branch_name: invoice.branch.name,
     },
   });
-}
-
-export function notificationConfiguration() {
-  return {
-    email: Boolean(env.SMTP_HOST && env.MAIL_FROM),
-    sms: twilioConfigured("SMS"),
-    whatsapp: twilioConfigured("WHATSAPP"),
-  };
 }

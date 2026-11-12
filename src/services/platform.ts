@@ -9,7 +9,6 @@ import { recordAudit } from "@/lib/audit";
 import { slugify, asNumber } from "@/lib/utils";
 import { DEFAULT_PLATFORM_SETTINGS, parseSalonSettings, platformSettingsSchema } from "@/lib/settings";
 import type { platformSalonInput, platformSettingsUpdate, planInput, subscriptionInput, templateInput } from "@/lib/validation";
-import type { TenantContext } from "@/lib/auth";
 
 type PlatformSalonInput = z.infer<typeof platformSalonInput>;
 type PlanInput = z.infer<typeof planInput>;
@@ -418,8 +417,4 @@ export async function listNotificationLogs(input: { page: number; pageSize: numb
 
 export async function listSalonOptions() {
   return prisma.salon.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
-}
-
-export function tenantPlanDto(context: TenantContext) {
-  return prisma.subscription.findUnique({ where: { salonId: context.salon.id }, include: { plan: true } });
 }

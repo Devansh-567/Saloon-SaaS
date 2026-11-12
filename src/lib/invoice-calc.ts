@@ -7,15 +7,6 @@ export type CalcLineInput = {
   commissionRate: number;
 };
 
-export type CalcLine = CalcLineInput & {
-  gross: number;
-  discountAmount: number;
-  netBase: number;
-  taxAmount: number;
-  lineTotal: number;
-  commissionAmount: number;
-};
-
 export function calculateInvoice<T extends CalcLineInput>(lines: T[], requestedDiscount: number) {
   if (!lines.length) throw new Error("At least one line is required");
   const subtotal = roundMoney(lines.reduce((sum, line) => sum + roundMoney(line.quantity * line.unitPrice), 0));

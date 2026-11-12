@@ -1,7 +1,7 @@
 import "server-only";
 import { FileKind } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { badRequest, notFound } from "@/lib/errors";
+import { notFound } from "@/lib/errors";
 import { readStoredFile, removeStoredFile, saveUpload } from "@/lib/storage";
 import type { TenantContext } from "@/lib/auth";
 import { recordAudit } from "@/lib/audit";
@@ -79,19 +79,4 @@ export async function readTenantFile(
   }
   const bytes = await readStoredFile(file.relativePath);
   return { file, bytes };
-}
-
-export async function readPlatformFile(fileId: string) {
-  const file = await prisma.fileAsset.findUnique({ where: { id: fileId } });
-  if (!file) throw notFound("File not found");
-  const bytes = await readStoredFile(file.relativePath);
-  return { file, bytes };
-}
-
-export async function assertDocumentOwned(context: TenantContext, fileId: string) {
-  const file = await prisma.fileAsset.findFirst({
-    where: { id: fileId, salonId: context.salon.id, kind: FileKind.DOCUMENT },
-  });
-  if (!file) throw badRequest("Receipt file was not found in this salon");
-  return file;
 }

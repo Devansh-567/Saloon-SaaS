@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import "server-only";
 import type { z } from "zod";
 import { PlatformRole, Role } from "@prisma/client";
@@ -6,7 +7,6 @@ import QRCode from "qrcode";
 import { prisma } from "@/lib/prisma";
 import { AppError, badRequest, conflict, forbidden, unauthorized } from "@/lib/errors";
 import {
-  DUMMY_PASSWORD_HASH,
   decryptSecret,
   encryptSecret,
   generateRecoveryCodes,
@@ -14,6 +14,8 @@ import {
   hashRecoveryCode,
   safeEqual,
   verifyPassword,
+  verifyDummyPassword,
+  needsRehash,
 } from "@/lib/crypto";
 import {
   createSession,
@@ -84,14 +86,17 @@ export async function registerOwner(input: RegisterInput, meta: { ip: string; us
 }
 
 export async function loginUser(input: LoginInput, meta: { ip: string; userAgent?: string }) {
-  await Promise.all([
+  const [user] = await Promise.all([
+    prisma.user.findUnique({
+      where: { email: input.email },
+      include: { memberships: { where: { active: true }, orderBy: { createdAt: "asc" }, take: 1 } },
+    }),
     rateLimit(`login:ip:${meta.ip}`, 20, 15 * 60000),
     rateLimit(`login:email:${input.email}`, 10, 15 * 60000),
   ]);
-  const user = await prisma.user.findUnique({ where: { email: input.email } });
   if (!user) {
-    await verifyPassword(input.password, DUMMY_PASSWORD_HASH);
-    await recordAudit({ action: "auth.login_failed", entityType: "User", ip: meta.ip, metadata: { email: input.email } });
+    await verifyDummyPassword(input.password);
+    after(() => recordAudit({ action: "auth.login_failed", entityType: "User", ip: meta.ip, metadata: { email: input.email } }));
     throw unauthorized("Invalid email or password");
   }
   if (user.lockedUntil && user.lockedUntil > new Date()) {
@@ -107,44 +112,43 @@ export async function loginUser(input: LoginInput, meta: { ip: string; userAgent
         lockedUntil: failedAttempts >= 5 ? new Date(Date.now() + 15 * 60000) : null,
       },
     });
-    await recordAudit({
-      actorUserId: user.id,
-      action: "auth.login_failed",
-      entityType: "User",
-      entityId: user.id,
-      ip: meta.ip,
-    });
+    after(() =>
+      recordAudit({
+        actorUserId: user.id,
+        action: "auth.login_failed",
+        entityType: "User",
+        entityId: user.id,
+        ip: meta.ip,
+      }),
+    );
     throw unauthorized("Invalid email or password");
   }
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { failedAttempts: 0, lockedUntil: null },
-  });
   const mfaVerified = !user.mfaEnabled;
-  await createSession(user.id, mfaVerified, meta);
-  if (!mfaVerified) {
-    await recordAudit({
+  const membership = user.memberships[0] ?? null;
+  const upgradedHash = needsRehash(user.passwordHash) ? await hashPassword(input.password) : null;
+  await Promise.all([
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        failedAttempts: 0,
+        lockedUntil: null,
+        ...(mfaVerified ? { lastLoginAt: new Date() } : {}),
+        ...(upgradedHash ? { passwordHash: upgradedHash } : {}),
+      },
+    }),
+    createSession(user.id, mfaVerified, { ...meta, salonId: membership?.salonId }),
+  ]);
+  after(() =>
+    recordAudit({
+      salonId: membership?.salonId,
       actorUserId: user.id,
-      action: "auth.password_verified",
+      action: mfaVerified ? "auth.login_succeeded" : "auth.password_verified",
       entityType: "User",
       entityId: user.id,
       ip: meta.ip,
-    });
-    return { mfaRequired: true, user: publicUser(user), redirectTo: "/mfa" };
-  }
-  await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
-  const membership = await prisma.membership.findFirst({
-    where: { userId: user.id, active: true },
-    orderBy: { createdAt: "asc" },
-  });
-  await recordAudit({
-    salonId: membership?.salonId,
-    actorUserId: user.id,
-    action: "auth.login_succeeded",
-    entityType: "User",
-    entityId: user.id,
-    ip: meta.ip,
-  });
+    }),
+  );
+  if (!mfaVerified) return { mfaRequired: true, user: publicUser(user), redirectTo: "/mfa" };
   return {
     mfaRequired: false,
     user: publicUser(user),

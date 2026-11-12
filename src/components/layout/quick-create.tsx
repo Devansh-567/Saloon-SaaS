@@ -1,34 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icons";
 import { allowedQuickActions } from "@/lib/nav";
 import type { Permission } from "@/lib/permissions";
 
-function useCloseOnNavigate(open: boolean, close: () => void) {
+function useCloseOnNavigate(open: boolean, setOpen: Dispatch<SetStateAction<boolean>>) {
   const pathname = usePathname();
   useEffect(() => {
-    if (open) close();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+    setOpen(false);
+  }, [pathname, setOpen]);
 
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
+      if (event.key === "Escape") setOpen(false);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, setOpen]);
 }
 
 export function QuickCreateMenu({ permissions }: { permissions: Permission[] }) {
   const [open, setOpen] = useState(false);
   const actions = allowedQuickActions(permissions);
-  useCloseOnNavigate(open, () => setOpen(false));
+  useCloseOnNavigate(open, setOpen);
 
   if (actions.length === 0) return null;
 
@@ -57,7 +55,7 @@ export function QuickCreateSheet({ permissions }: { permissions: Permission[] })
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const actions = allowedQuickActions(permissions);
-  useCloseOnNavigate(open, () => setOpen(false));
+  useCloseOnNavigate(open, setOpen);
 
   if (actions.length === 0) return null;
 

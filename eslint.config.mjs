@@ -14,8 +14,6 @@ const eslintConfig = [
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
-      // Salons upload logos served through our own authenticated /api/files route,
-      // so they are intentionally plain <img> elements and not next/image.
       "@next/next/no-img-element": "off",
     },
   },

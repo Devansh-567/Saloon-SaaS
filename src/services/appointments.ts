@@ -92,16 +92,6 @@ export async function listAppointments(
   return { items: items.map(appointmentDto), total, pages: Math.ceil(total / input.pageSize) };
 }
 
-export async function getAppointment(context: TenantContext, id: string) {
-  const appointment = await prisma.appointment.findFirst({
-    where: { id, salonId: context.salon.id },
-    include: includeAppointment,
-  });
-  if (!appointment) return null;
-  if (context.role === "STAFF" && appointment.staffMembershipId !== context.membership.id) return null;
-  return appointmentDto(appointment);
-}
-
 async function validateBookingRefs(
   context: TenantContext,
   input: { branchId: string; serviceId: string; staffMembershipId?: string; customerId?: string },

@@ -52,3 +52,13 @@ Notes: works in Indian Rupees only. All payments go to the one Razorpay account 
 
 ## 4. Database changes
 This update adds migrations. They run automatically with the Docker setup; otherwise run `npx prisma migrate deploy` (use Neon's direct, non-pooled connection string for that command).
+
+## 5. Speed and many users at once
+What is already built in: fast native password hashing (old accounts upgrade automatically the first time they sign in), a single session lookup per page, the sign-in audit log written after the page responds, and database queries that run side by side.
+
+What you must set up on your hosting for the best speed:
+* **Same region.** Put the app server and the Neon database in the same region (for India: Mumbai/Singapore for both). Different regions add 100 to 250 ms to every database call.
+* **Neon pooled connection.** Use Neon's *pooled* connection string (the host contains `-pooler`) as `DATABASE_URL`, with `?sslmode=require&pgbouncer=true&connection_limit=10`. For `prisma migrate deploy`, temporarily use the direct (non-pooled) string.
+* **Keep the database awake.** On Neon's free plan the database sleeps after 5 idle minutes and the next request waits 1 to 3 seconds. Use a paid plan with "scale to zero" turned off, or ping `https://your-live-address/api/health` every few minutes.
+* **More than one app server.** The app keeps no data in memory, so you can run several copies behind a load balancer. Sessions, rate limits and files must then use the shared database; set `STORAGE_ROOT` to a shared or persistent disk.
+* **CPU.** Give each app server at least 1 full vCPU. Password checks run on background threads (`UV_THREADPOOL_SIZE=16` is already set in the Dockerfile).

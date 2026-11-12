@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient, Prisma } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "../src/lib/password";
 import { DEFAULT_SALON_SETTINGS } from "../src/lib/settings";
 
 const prisma = new PrismaClient();
@@ -146,7 +146,7 @@ async function globalCatalog() {
 }
 
 async function demoSalon() {
-  const passwordHash = await bcrypt.hash(SEED_PASSWORD, 12);
+  const passwordHash = await hashPassword(SEED_PASSWORD);
   const owner = await prisma.user.upsert({
     where: { email: "owner@demo.local" },
     create: { email: "owner@demo.local", name: "Amara Okafor", phone: "+15550101001", passwordHash },

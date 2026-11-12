@@ -1,5 +1,5 @@
 import "server-only";
-import { InvoiceStatus, Prisma, type PaymentKind, type PaymentMethod } from "@prisma/client";
+import { InvoiceStatus, Prisma } from "@prisma/client";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { TenantContext } from "@/lib/auth";
@@ -557,7 +557,3 @@ export async function voidInvoice(context: TenantContext, invoiceId: string) {
   });
   return invoiceDto(invoice);
 }
-
-export type InvoiceDto = ReturnType<typeof invoiceDto>;
-export type PaymentKindDto = PaymentKind;
-export type PaymentMethodDto = PaymentMethod;

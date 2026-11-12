@@ -264,25 +264,3 @@ export async function updateService(context: TenantContext, id: string, input: P
   });
   return serviceDto(service);
 }
-
-export async function listBookableStaff(context: TenantContext, branchId?: string) {
-  const staff = await prisma.membership.findMany({
-    where: {
-      salonId: context.salon.id,
-      active: true,
-      ...(branchId ? { OR: [{ branchId }, { branchId: null }] } : {}),
-    },
-    include: {
-      user: { select: { name: true } },
-      staffProfile: { select: { color: true, schedule: true } },
-    },
-    orderBy: { createdAt: "asc" },
-  });
-  return staff.map((member) => ({
-    id: member.id,
-    name: member.user.name,
-    branchId: member.branchId,
-    color: member.staffProfile?.color || "#8c6a52",
-    schedule: member.staffProfile?.schedule || [],
-  }));
-}

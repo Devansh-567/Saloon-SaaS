@@ -1,10 +1,11 @@
+import { BRAND } from "@/lib/brand";
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Salon SaaS",
-    short_name: "Salon",
-    description: "Salon operations, scheduling, billing, inventory, and team management in one workspace.",
+    name: BRAND.name,
+    short_name: BRAND.name,
+    description: BRAND.description,
     start_url: "/",
     display: "standalone",
     background_color: "#f7f4ef",

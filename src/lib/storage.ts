@@ -96,24 +96,6 @@ export async function saveUpload(input: {
   return { ...saved, size: bytes.length, mimeType: detected.mime, originalName: input.file.name.slice(0, 200) };
 }
 
-export async function writeGeneratedFile(input: {
-  salonId: string;
-  kind: "INVOICE" | "RECEIPT";
-  basename: string;
-  bytes: Buffer;
-  mime: string;
-  ext: string;
-  existingPath?: string | null;
-}) {
-  await ensureStorage(input.salonId);
-  const relativePath =
-    input.existingPath ||
-    path.posix.join("salons", input.salonId, "invoices", `${input.basename}-${randomUUID()}.${input.ext}`);
-  const absolute = safeRelativePath(relativePath);
-  await writeFile(absolute, input.bytes, { mode: 0o600 });
-  return { relativePath, storedName: path.basename(relativePath) };
-}
-
 export async function readStoredFile(relativePath: string) {
   return readFile(safeRelativePath(relativePath));
 }

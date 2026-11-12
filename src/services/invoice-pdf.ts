@@ -1,5 +1,4 @@
 import "server-only";
-import { FileKind } from "@prisma/client";
 import PDFDocument from "pdfkit";
 import path from "node:path";
 import { existsSync } from "node:fs";
@@ -8,10 +7,9 @@ import { BRAND } from "@/lib/brand";
 import { notFound } from "@/lib/errors";
 import { parseSalonSettings } from "@/lib/settings";
 import { formatMoney as formatMoneyBase, asNumber } from "@/lib/utils";
-import { readStoredFile, writeGeneratedFile } from "@/lib/storage";
+import { readStoredFile } from "@/lib/storage";
 import type { TenantContext } from "@/lib/auth";
 
-// Look for the bundled fonts in a few places so a different hosting layout cannot break PDFs.
 function findFont(file: string) {
   const candidates = [
     path.join(process.cwd(), "public", "fonts", file),
@@ -45,7 +43,6 @@ async function buildInvoicePdf(invoiceId: string, salonId: string) {
   const regularFont = findFont("NotoSans-Regular.ttf");
   const boldFont = findFont("NotoSans-Bold.ttf");
   const hasFonts = Boolean(regularFont && boldFont);
-  // Built-in fonts cannot draw the rupee sign, so fall back to "Rs." only in that case.
   doc.registerFont("Body", regularFont || "Helvetica");
   doc.registerFont("Bold", boldFont || "Helvetica-Bold");
   const formatMoney = (value: unknown, currency: string, locale: string) => {
@@ -174,52 +171,12 @@ async function buildInvoicePdf(invoiceId: string, salonId: string) {
   return done;
 }
 
-export async function ensureInvoicePdf(invoiceId: string, context: TenantContext) {
-  const invoice = await prisma.invoice.findFirst({
-    where: { id: invoiceId, salonId: context.salon.id },
-    include: { pdfFile: true },
-  });
-  if (!invoice) throw notFound("Invoice not found");
-  const bytes = await buildInvoicePdf(invoiceId, context.salon.id);
-  const stored = await writeGeneratedFile({
-    salonId: context.salon.id,
-    kind: invoice.status === "PAID" ? "RECEIPT" : "INVOICE",
-    basename: invoice.number,
-    bytes,
-    mime: "application/pdf",
-    ext: "pdf",
-    existingPath: invoice.pdfFile?.relativePath,
-  });
-  if (invoice.pdfFileId) {
-    await prisma.fileAsset.update({
-      where: { id: invoice.pdfFileId },
-      data: { size: bytes.length, kind: FileKind.INVOICE, mimeType: "application/pdf" },
-    });
-    return prisma.fileAsset.findUniqueOrThrow({ where: { id: invoice.pdfFileId } });
-  }
-  const asset = await prisma.fileAsset.create({
-    data: {
-      salonId: context.salon.id,
-      kind: FileKind.INVOICE,
-      originalName: `invoice-${invoice.number}.pdf`,
-      storedName: stored.storedName,
-      relativePath: stored.relativePath,
-      mimeType: "application/pdf",
-      size: bytes.length,
-      uploadedById: context.user.id,
-    },
-  });
-  await prisma.invoice.update({ where: { id: invoiceId }, data: { pdfFileId: asset.id } });
-  return asset;
-}
-
 export async function getInvoicePdfBytes(invoiceId: string, context: TenantContext) {
   const invoice = await prisma.invoice.findFirst({ where: { id: invoiceId, salonId: context.salon.id } });
   if (!invoice) throw notFound("Invoice not found");
   return buildInvoicePdf(invoiceId, context.salon.id);
 }
 
-/** Builds the PDF on the fly (nothing is written to disk) for a direct download. */
 export async function getInvoicePdfDownload(invoiceId: string, context: TenantContext) {
   const invoice = await prisma.invoice.findFirst({
     where: { id: invoiceId, salonId: context.salon.id },

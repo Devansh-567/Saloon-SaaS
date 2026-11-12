@@ -30,7 +30,6 @@ export function ThemeToggle() {
     try {
       localStorage.setItem("salon-theme", next);
     } catch {
-      // Storage unavailable; theme still applies for this session.
     }
   }
 

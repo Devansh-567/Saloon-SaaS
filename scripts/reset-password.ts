@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "../src/lib/password";
 import { emailSchema, passwordSchema } from "../src/lib/security";
 
 const prisma = new PrismaClient();
@@ -24,7 +24,7 @@ async function main() {
   await prisma.$transaction([
     prisma.user.update({
       where: { id: user.id },
-      data: { passwordHash: await bcrypt.hash(password, 12), mustChangePassword: false, failedAttempts: 0, lockedUntil: null },
+      data: { passwordHash: await hashPassword(password), mustChangePassword: false, failedAttempts: 0, lockedUntil: null },
     }),
     prisma.session.deleteMany({ where: { userId: user.id } }),
   ]);

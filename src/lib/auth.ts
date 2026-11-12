@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { Prisma, PlatformRole, type Salon, type Session, type User, type Membership, type Branch } from "@prisma/client";
 import { prisma } from "./prisma";
@@ -41,7 +42,7 @@ function sessionCookieOptions(maxAge: number) {
 export async function createSession(
   userId: string,
   mfaVerified: boolean,
-  meta: { ip?: string; userAgent?: string } = {},
+  meta: { ip?: string; userAgent?: string; salonId?: string | null } = {},
 ) {
   const token = randomToken();
   const ttlSeconds = mfaVerified
@@ -51,6 +52,7 @@ export async function createSession(
     data: {
       tokenHash: hashToken(token),
       userId,
+      salonId: meta.salonId ?? null,
       mfaVerified,
       expiresAt: new Date(Date.now() + ttlSeconds * 1000),
       ip: meta.ip,
@@ -79,7 +81,7 @@ export async function refreshSessionAfterMfa(sessionId: string) {
   return session;
 }
 
-export async function readSession(): Promise<SessionViewer | null> {
+export const readSession = cache(async (): Promise<SessionViewer | null> => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const session = await prisma.session.findUnique({
@@ -100,7 +102,7 @@ export async function readSession(): Promise<SessionViewer | null> {
     return null;
   }
   return { session, user: session.user };
-}
+});
 
 export async function getVerifiedViewer() {
   const viewer = await readSession();
@@ -116,31 +118,36 @@ export async function getPendingMfaViewer() {
 
 export async function resolveTenant(viewer: SessionViewer): Promise<TenantContext | null> {
   if (viewer.user.platformRole === PlatformRole.SUPER_ADMIN) return null;
-  const membership = await prisma.membership.findFirst({
-    where: {
-      userId: viewer.user.id,
-      active: true,
-      ...(viewer.session.salonId ? { salonId: viewer.session.salonId } : {}),
-    },
-    include: { salon: true, branch: true },
-  });
+  const salonHint = viewer.session.salonId;
+  const [hinted, hintedRolePermissions] = await Promise.all([
+    prisma.membership.findFirst({
+      where: { userId: viewer.user.id, active: true, ...(salonHint ? { salonId: salonHint } : {}) },
+      include: { salon: true, branch: true },
+    }),
+    salonHint
+      ? prisma.salonRolePermission.findMany({ where: { salonId: salonHint }, select: { role: true, permissions: true } })
+      : Promise.resolve([]),
+  ]);
   const resolved =
-    membership ||
-    (viewer.session.salonId
+    hinted ||
+    (salonHint
       ? await prisma.membership.findFirst({
           where: { userId: viewer.user.id, active: true },
           include: { salon: true, branch: true },
         })
       : null);
   if (!resolved) return null;
-  if (resolved.salonId !== viewer.session.salonId) {
+  if (resolved.salonId !== salonHint) {
     await prisma.session.update({ where: { id: viewer.session.id }, data: { salonId: resolved.salonId } }).catch(() => {});
   }
   const role = resolved.role as StaffRole;
-  const rolePermissions = await prisma.salonRolePermission.findUnique({
-    where: { salonId_role: { salonId: resolved.salonId, role: resolved.role } },
-    select: { permissions: true },
-  });
+  const rolePermissions =
+    resolved.salonId === salonHint
+      ? hintedRolePermissions.find((row) => row.role === resolved.role)
+      : await prisma.salonRolePermission.findUnique({
+          where: { salonId_role: { salonId: resolved.salonId, role: resolved.role } },
+          select: { permissions: true },
+        });
   return {
     user: viewer.user,
     session: viewer.session,
@@ -152,11 +159,11 @@ export async function resolveTenant(viewer: SessionViewer): Promise<TenantContex
   };
 }
 
-export async function getTenantContext() {
+export const getTenantContext = cache(async () => {
   const viewer = await getVerifiedViewer();
   if (!viewer) return null;
   return resolveTenant(viewer);
-}
+});
 
 export function hasPermission(context: TenantContext, permission: Permission) {
   return context.permissions.includes(permission);
@@ -175,12 +182,6 @@ export async function requireApiTenant(permission?: Permission) {
   if (context.salon.status !== "ACTIVE") throw new AppError(403, "SALON_SUSPENDED", "This salon is suspended");
   if (permission) requirePermission(context, permission);
   return context;
-}
-
-export async function requireApiUser() {
-  const viewer = await getVerifiedViewer();
-  if (!viewer) throw unauthorized();
-  return viewer;
 }
 
 export async function requirePlatformApi() {

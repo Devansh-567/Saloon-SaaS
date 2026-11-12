@@ -5,15 +5,6 @@ import { getTenantContext, getPendingMfaViewer, getVerifiedViewer } from "./auth
 import { hasPermission, type TenantContext } from "./auth";
 import type { Permission } from "./permissions";
 
-export async function requireUserPage() {
-  const viewer = await getVerifiedViewer();
-  if (!viewer) {
-    const pending = await getPendingMfaViewer();
-    redirect(pending ? "/mfa" : "/login");
-  }
-  return viewer;
-}
-
 export async function requireTenantPage(
   permission?: Permission,
   options: { skipPasswordGate?: boolean } = {},

@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "../src/lib/password";
 import { emailSchema, passwordSchema } from "../src/lib/security";
 
 const prisma = new PrismaClient();
@@ -37,7 +37,7 @@ async function main() {
     throw new Error("Name must be between 1 and 120 characters");
   }
 
-  const passwordHash = await bcrypt.hash(password, 12);
+  const passwordHash = await hashPassword(password);
   const user = await prisma.user.upsert({
     where: { email },
     create: {

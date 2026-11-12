@@ -55,7 +55,6 @@ export default async function ReportsPage({
   } else if (range === "custom") {
     if (params.from && /^\d{4}-\d{2}-\d{2}$/.test(params.from)) fromDate = params.from;
     if (params.to && /^\d{4}-\d{2}-\d{2}$/.test(params.to)) toDate = params.to;
-    // Never let the start date be after the end date
     if (fromDate > toDate) [fromDate, toDate] = [toDate, fromDate];
   }
 

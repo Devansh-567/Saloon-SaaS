@@ -3,7 +3,6 @@
 import { useState, type InputHTMLAttributes } from "react";
 import { Icon } from "@/components/ui/icons";
 
-/** Password box with an eye button to show or hide what is typed. */
 export function PasswordInput(props: Omit<InputHTMLAttributes<HTMLInputElement>, "type">) {
   const [visible, setVisible] = useState(false);
   const { className, ...rest } = props;

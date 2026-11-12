@@ -15,7 +15,6 @@ export async function requestPasswordReset(input: z.infer<typeof forgotPasswordI
   await rateLimit(`forgot-ip:${meta.ip}`, 8, 15 * 60_000);
   await rateLimit(`forgot-email:${input.email}`, 3, 60 * 60_000);
   const emailConfigured = emailIsConfigured();
-  // Same answer whether or not the account exists, so nobody can probe for accounts.
   if (!emailConfigured) return { emailConfigured };
   const user = await prisma.user.findUnique({ where: { email: input.email } });
   if (!user) return { emailConfigured };
@@ -55,7 +54,6 @@ export async function resetPassword(input: z.infer<typeof resetPasswordInput>, m
       data: { passwordHash, mustChangePassword: false, failedAttempts: 0, lockedUntil: null },
     }),
     prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
-    // Sign the user out everywhere after a reset.
     prisma.session.deleteMany({ where: { userId: record.userId } }),
   ]);
   await recordAudit({

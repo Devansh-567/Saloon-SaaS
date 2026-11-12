@@ -1,15 +1,11 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import bcrypt from "bcryptjs";
 import { env } from "./env";
 
 const encryptionKey = Buffer.from(env.MFA_ENCRYPTION_KEY, "base64");
 if (encryptionKey.length !== 32) throw new Error("MFA_ENCRYPTION_KEY must be 32 bytes encoded as base64");
 
-export const DUMMY_PASSWORD_HASH = "$2b$12$0OY9iPvkpNPfiQAfVVxQQeBjbwwk9.fPFfBfcnFERmSq.BgRiB3nG";
-
-export const hashPassword = (password: string) => bcrypt.hash(password, 12);
-export const verifyPassword = (password: string, hash: string) => bcrypt.compare(password, hash);
+export { hashPassword, verifyPassword, verifyDummyPassword, needsRehash } from "./password";
 
 export function randomToken(bytes = 32) {
   return randomBytes(bytes).toString("base64url");

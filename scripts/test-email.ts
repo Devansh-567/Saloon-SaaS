@@ -1,8 +1,6 @@
 import "dotenv/config";
 import nodemailer from "nodemailer";
 
-// Usage: npm run email:test -- you@example.com
-// Sends one test email using the SMTP_* settings, and tells you plainly what is wrong if it fails.
 async function main() {
   const to = process.argv[2];
   const { SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;

@@ -53,7 +53,3 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
   const text = label || statusLabel(status);
   return <span className={`badge ${styles[status] || ""}`}>{text.charAt(0).toUpperCase() + text.slice(1)}</span>;
 }
-
-export function ActiveBadge({ active }: { active: boolean }) {
-  return <span className={`badge ${active ? "badge-success" : "badge-danger"}`}>{active ? "Active" : "Inactive"}</span>;
-}

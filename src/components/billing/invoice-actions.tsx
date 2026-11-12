@@ -78,7 +78,6 @@ export function InvoiceActions({
   }
   const closed = invoice.status === "VOID";
 
-  // Opens WhatsApp so the owner can pick ANY chat or contact. No customer number needed.
   async function shareOnWhatsApp() {
     setSharing(true);
     const lines = [
@@ -95,7 +94,6 @@ export function InvoiceActions({
       if (blob) {
         const file = new File([blob], `bill-${invoice.number}.pdf`, { type: "application/pdf" });
         if (typeof navigator !== "undefined" && navigator.canShare?.({ files: [file] })) {
-          // Phone: opens the share sheet. Choose WhatsApp, then any person or group.
           await navigator.share({ files: [file], text, title: `Bill ${invoice.number}` });
           setSharing(false);
           return;
@@ -107,7 +105,6 @@ export function InvoiceActions({
         return;
       }
     }
-    // Computer (or a phone that cannot share files): open WhatsApp with the message, save the PDF to attach.
     if (blob) {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");

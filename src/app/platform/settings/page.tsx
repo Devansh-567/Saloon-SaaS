@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import { getPlatformSettings } from "@/services/platform";
 import { env } from "@/lib/env";
 import { PlatformSettingsForm } from "@/components/platform/platform-settings-form";
@@ -66,10 +78,11 @@ export default async function PlatformSettingsPage() {
             </li>
           </ul>
           <p className="hint" style={{ marginTop: 12 }}>
-            When a provider is missing, outbound notifications are logged with status “skipped” instead of being silently dropped.
+            When a provider is missing, outbound notifications are logged with status â€œskippedâ€ instead of being silently dropped.
           </p>
         </div>
       </section>
     </div>
   );
 }
+

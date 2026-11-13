@@ -1,3 +1,5 @@
+// 2026 Devansh Singh
+// Guru AI Technologies
 import { onlinePaymentsEnabled } from "@/services/online-payments";
 import { BRAND } from "@/lib/brand";
 import { PoweredBy } from "@/components/brand/company-logo";

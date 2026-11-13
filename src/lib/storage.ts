@@ -1,4 +1,16 @@
-import "server-only";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import "server-only";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
@@ -103,3 +115,4 @@ export async function readStoredFile(relativePath: string) {
 export async function removeStoredFile(relativePath: string) {
   await unlink(safeRelativePath(relativePath)).catch(() => {});
 }
+

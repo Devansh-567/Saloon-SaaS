@@ -1,4 +1,16 @@
-export const ATTENDANCE_STATUSES = ["PRESENT", "HALF_DAY", "ABSENT", "LEAVE", "HOLIDAY", "WEEK_OFF"] as const;
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ export const ATTENDANCE_STATUSES = ["PRESENT", "HALF_DAY", "ABSENT", "LEAVE", "HOLIDAY", "WEEK_OFF"] as const;
 export type AttendanceStatusValue = (typeof ATTENDANCE_STATUSES)[number];
 
 export const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatusValue, string> = {
@@ -93,3 +105,4 @@ export function advanceTone(status: string) {
   if (status === "PENDING") return "badge-warning";
   return "badge-danger";
 }
+

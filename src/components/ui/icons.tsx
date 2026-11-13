@@ -1,4 +1,16 @@
-import type { SVGProps } from "react";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { SVGProps } from "react";
 
 const paths = {
   dashboard: ["M3 3h7v7H3z", "M14 3h7v4h-7z", "M14 11h7v10h-7z", "M3 14h7v7H3z"],
@@ -82,3 +94,4 @@ export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGEle
     </svg>
   );
 }
+

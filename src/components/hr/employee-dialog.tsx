@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -100,7 +112,7 @@ export function EmployeeDialog({
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={`Work details · ${member.name}`}
+        title={`Work details Â· ${member.name}`}
         description="These details stay private to the owner and managers you allow."
         wide
         footer={
@@ -109,7 +121,7 @@ export function EmployeeDialog({
               Cancel
             </button>
             <button type="submit" form="employee-form" className="btn btn-primary" disabled={pending}>
-              {pending ? "Saving…" : "Save details"}
+              {pending ? "Savingâ€¦" : "Save details"}
             </button>
           </>
         }
@@ -204,7 +216,7 @@ export function EmployeeDialog({
             <div className="field span-2">
               <label className="switch">
                 <input type="checkbox" name="onboardingComplete" defaultChecked={member.profile.onboardingComplete} />
-                <span>Onboarding complete — documents and details are in place</span>
+                <span>Onboarding complete â€” documents and details are in place</span>
               </label>
             </div>
           </div>
@@ -216,3 +228,4 @@ export function EmployeeDialog({
     </>
   );
 }
+

@@ -1,3 +1,5 @@
+// 2026 Devansh Singh
+// Guru AI Technologies
 import { NextRequest } from "next/server";
 import { withApi, ok } from "@/lib/api";
 import { getInvitationInfo } from "@/services/team";

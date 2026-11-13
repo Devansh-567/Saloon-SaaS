@@ -1,3 +1,5 @@
+// 2026 Devansh Singh
+// Guru AI Technologies
 import { NextRequest } from "next/server";
 import { withApi, ok, readJson } from "@/lib/api";
 import { requirePlatformApi } from "@/lib/auth";

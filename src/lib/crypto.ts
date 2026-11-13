@@ -1,4 +1,16 @@
-import "server-only";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import "server-only";
 import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { env } from "./env";
 
@@ -47,3 +59,4 @@ export function generateRecoveryCodes(count = 8) {
   });
   return { codes, hashes: codes.map(hashRecoveryCode) };
 }
+

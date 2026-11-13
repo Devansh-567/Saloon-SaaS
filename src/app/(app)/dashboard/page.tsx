@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { getDashboardData } from "@/services/analytics";
@@ -116,7 +128,7 @@ export default async function DashboardPage() {
           <h1>Good to see you, {context.user.name.split(" ")[0]}.</h1>
           <p className="page-subtitle">
             Here is the working picture for {context.salon.name}
-            {context.branch ? ` · ${context.branch.name}` : ""}.
+            {context.branch ? ` Â· ${context.branch.name}` : ""}.
           </p>
         </div>
         <div className="page-actions">
@@ -145,9 +157,9 @@ export default async function DashboardPage() {
                     : "Up next today"}
               </h2>
               <p>
-                {formatTime(spotlight.startAt, context.salon.timezone, context.salon.locale)} –{" "}
+                {formatTime(spotlight.startAt, context.salon.timezone, context.salon.locale)} â€“{" "}
                 {formatTime(spotlight.endAt, context.salon.timezone, context.salon.locale)}
-                {remainingToday > 1 ? ` · ${remainingToday - 1} more on today's schedule` : ""}
+                {remainingToday > 1 ? ` Â· ${remainingToday - 1} more on today's schedule` : ""}
               </p>
             </div>
             <StatusBadge status={spotlight.status} />
@@ -163,7 +175,7 @@ export default async function DashboardPage() {
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontWeight: 600, fontSize: 15 }}>{spotlight.customer.name}</div>
                 <div style={{ color: "var(--muted)", fontSize: 12.5 }}>
-                  {spotlight.service.name} · {spotlight.service.durationMin} min · {spotlight.staff.name}
+                  {spotlight.service.name} Â· {spotlight.service.durationMin} min Â· {spotlight.staff.name}
                 </div>
               </div>
             </div>
@@ -231,7 +243,7 @@ export default async function DashboardPage() {
                   <div className="agenda-main">
                     <strong>{appointment.customer.name}</strong>
                     <span>
-                      {appointment.service.name} · {appointment.staff.name}
+                      {appointment.service.name} Â· {appointment.staff.name}
                     </span>
                   </div>
                   <div className="agenda-actions">
@@ -289,7 +301,7 @@ export default async function DashboardPage() {
                     <Icon name="phone" />
                     <span style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ display: "block", fontSize: 12.5, fontWeight: 600 }}>{followUp.customer.name}</span>
-                      <span className="hint">{followUp.title} · {formatDate(followUp.dueAt, context.salon.timezone, context.salon.locale)}</span>
+                      <span className="hint">{followUp.title} Â· {formatDate(followUp.dueAt, context.salon.timezone, context.salon.locale)}</span>
                     </span>
                     {followUp.overdue ? <span className="badge badge-danger">Overdue</span> : null}
                   </Link>
@@ -370,3 +382,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+

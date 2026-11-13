@@ -1,4 +1,16 @@
-export class ApiClientError extends Error {
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ export class ApiClientError extends Error {
   status: number;
   code: string;
   details: unknown;
@@ -59,3 +71,4 @@ export function errorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   return "Something went wrong. Please try again.";
 }
+

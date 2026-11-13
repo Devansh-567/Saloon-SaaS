@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import { requireTenantPage } from "@/lib/guards";
 import { hasPermission } from "@/lib/auth";
 import { getSalonSettingsData } from "@/services/salon-config";
@@ -71,19 +83,19 @@ export default async function SettingsPage() {
               <div className="stat-card">
                 <div className="stat-top"><span>Trial ends</span></div>
                 <div className="stat-value" style={{ fontSize: 20 }}>
-                  {data.subscription.trialEndsAt ? formatDay(data.subscription.trialEndsAt, context.salon.timezone, context.salon.locale) : "—"}
+                  {data.subscription.trialEndsAt ? formatDay(data.subscription.trialEndsAt, context.salon.timezone, context.salon.locale) : "â€”"}
                 </div>
                 <div className="stat-foot">After this date, billing begins</div>
               </div>
               <div className="stat-card">
                 <div className="stat-top"><span>Current period</span></div>
                 <div className="stat-value" style={{ fontSize: 20 }}>
-                  {data.subscription.currentPeriodEnd ? formatDay(data.subscription.currentPeriodEnd, context.salon.timezone, context.salon.locale) : "—"}
+                  {data.subscription.currentPeriodEnd ? formatDay(data.subscription.currentPeriodEnd, context.salon.timezone, context.salon.locale) : "â€”"}
                 </div>
                 <div className="stat-foot">
                   {Object.entries(data.subscription.plan.limits || {})
                     .map(([key, value]) => `${key.replace("max", "max ").toLowerCase()}: ${value}`)
-                    .join(" · ") || "No limits"}
+                    .join(" Â· ") || "No limits"}
                 </div>
               </div>
             </div>
@@ -105,3 +117,4 @@ export default async function SettingsPage() {
     </div>
   );
 }
+

@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { PasswordInput } from "@/components/ui/password-input";
 import { useRouter } from "next/navigation";
@@ -142,7 +154,7 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
             </div>
             <div className="form-actions">
               <button type="submit" className="btn btn-primary" disabled={passwordPending}>
-                {passwordPending ? "Updating…" : "Update password"}
+                {passwordPending ? "Updatingâ€¦" : "Update password"}
               </button>
             </div>
           </form>
@@ -174,7 +186,7 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
                     <input id="disable-code" name="code" className="input mono" required autoComplete="one-time-code" />
                   </div>
                   <button type="submit" className="btn btn-soft-danger" disabled={disablePending}>
-                    {disablePending ? "Disabling…" : "Turn off 2-step login"}
+                    {disablePending ? "Disablingâ€¦" : "Turn off 2-step login"}
                   </button>
                 </form>
               </div>
@@ -195,7 +207,7 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
               </div>
               <button type="button" className="btn btn-primary" onClick={beginSetup} disabled={setupPending}>
                 <Icon name="shield" />
-                {setupPending ? "Preparing…" : "Turn on 2-step login"}
+                {setupPending ? "Preparingâ€¦" : "Turn on 2-step login"}
               </button>
             </div>
           )}
@@ -226,7 +238,7 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
                 <input id="setup-code" name="code" className="input mono" required inputMode="numeric" pattern="\d{6}" maxLength={6} autoComplete="one-time-code" />
               </div>
               <button type="submit" className="btn btn-primary btn-block" style={{ marginTop: 14 }} disabled={enablePending}>
-                {enablePending ? "Verifying…" : "Confirm and turn on"}
+                {enablePending ? "Verifyingâ€¦" : "Confirm and turn on"}
               </button>
             </div>
           </form>
@@ -255,3 +267,4 @@ export function SecurityPanel({ mfaEnabled, required }: { mfaEnabled: boolean; r
     </div>
   );
 }
+

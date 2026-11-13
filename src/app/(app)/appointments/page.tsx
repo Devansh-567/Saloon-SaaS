@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import Link from "next/link";
 import { AppointmentStatus } from "@prisma/client";
 import { requireTenantPage } from "@/lib/guards";
@@ -117,11 +129,11 @@ export default async function AppointmentsPage({
                   </div>
                   <div className="agenda-main">
                     <strong>
-                      {appointment.customer.name} <span style={{ fontWeight: 400, color: "var(--muted)" }}>· {appointment.service.name}</span>
+                      {appointment.customer.name} <span style={{ fontWeight: 400, color: "var(--muted)" }}>Â· {appointment.service.name}</span>
                     </strong>
                     <span>
-                      {appointment.staff.name} · {appointment.branch.name}
-                      {appointment.walkIn ? " · no booking" : ""}
+                      {appointment.staff.name} Â· {appointment.branch.name}
+                      {appointment.walkIn ? " Â· no booking" : ""}
                     </span>
                     {appointment.notes ? <span style={{ marginTop: 2 }}>{appointment.notes}</span> : null}
                   </div>
@@ -188,3 +200,4 @@ export default async function AppointmentsPage({
     </div>
   );
 }
+

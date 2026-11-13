@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { LeaveStatus } from "@prisma/client";
@@ -125,7 +137,7 @@ export default async function StaffPage({
         <div className="stat-card">
           <div className="stat-top"><span>In today</span><Icon name="check" /></div>
           <div className="stat-value">{summary.present}</div>
-          <div className="stat-foot">{summary.unmarked} not marked · {summary.onLeave} on leave</div>
+          <div className="stat-foot">{summary.unmarked} not marked Â· {summary.onLeave} on leave</div>
         </div>
         <div className="stat-card">
           <div className="stat-top"><span>Leave waiting</span><Icon name="calendar" /></div>
@@ -159,7 +171,7 @@ export default async function StaffPage({
             <div className="card-head">
               <div>
                 <h2>People</h2>
-                <p>{activeMembers.length} active · {members.length} total</p>
+                <p>{activeMembers.length} active Â· {members.length} total</p>
               </div>
               <Link href="/team" className="btn btn-ghost btn-sm">
                 Invite someone <Icon name="arrow" />
@@ -236,7 +248,7 @@ export default async function StaffPage({
               <div className="card-head">
                 <div>
                   <h2>Advances waiting</h2>
-                  <p>{summary.pendingAdvanceCount} request{summary.pendingAdvanceCount === 1 ? "" : "s"} · {formatMoney(summary.pendingAdvanceAmount, context.salon.currency, context.salon.locale)}</p>
+                  <p>{summary.pendingAdvanceCount} request{summary.pendingAdvanceCount === 1 ? "" : "s"} Â· {formatMoney(summary.pendingAdvanceAmount, context.salon.currency, context.salon.locale)}</p>
                 </div>
                 <Link href="/staff?tab=pay" className="btn btn-secondary btn-sm">Review</Link>
               </div>
@@ -353,7 +365,7 @@ export default async function StaffPage({
             <div className="stat-card">
               <div className="stat-top"><span>Appointments</span><Icon name="calendar" /></div>
               <div className="stat-value">{performance.appointments}</div>
-              <div className="stat-foot">{performance.completed} completed · {performance.completionRate}%</div>
+              <div className="stat-foot">{performance.completed} completed Â· {performance.completionRate}%</div>
             </div>
             <div className="stat-card">
               <div className="stat-top"><span>Sales handled</span><Icon name="money" /></div>
@@ -363,7 +375,7 @@ export default async function StaffPage({
             <div className="stat-card">
               <div className="stat-top"><span>Attendance</span><Icon name="check" /></div>
               <div className="stat-value">{performance.attendance.rate}%</div>
-              <div className="stat-foot">{performance.attendance.present} present · {performance.attendance.absent} absent</div>
+              <div className="stat-foot">{performance.attendance.present} present Â· {performance.attendance.absent} absent</div>
             </div>
             <div className="stat-card">
               <div className="stat-top"><span>Salary paid</span><Icon name="wallet" /></div>
@@ -428,3 +440,4 @@ export default async function StaffPage({
     </div>
   );
 }
+

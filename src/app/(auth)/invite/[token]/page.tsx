@@ -1,3 +1,5 @@
+// 2026 Devansh Singh
+// Guru AI Technologies
 import { AuthBrand } from "@/components/brand/auth-brand";
 import type { Metadata } from "next";
 import Link from "next/link";

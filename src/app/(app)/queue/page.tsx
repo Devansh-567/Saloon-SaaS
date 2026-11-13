@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { hasPermission } from "@/lib/auth";
@@ -106,14 +118,14 @@ export default async function QueuePage({ searchParams }: { searchParams: Promis
                         <div style={{ fontFamily: "var(--font-display)", fontSize: 32, lineHeight: 1 }}>#{ticket.queueNumber}</div>
                         <div style={{ fontWeight: 650, fontSize: 13, marginTop: 7 }}>{ticket.name}</div>
                         <div style={{ color: "var(--muted)", fontSize: 11.5 }}>
-                          {ticket.phone || "No phone"} · joined {formatTime(ticket.createdAt, context.salon.timezone, context.salon.locale)}
+                          {ticket.phone || "No phone"} Â· joined {formatTime(ticket.createdAt, context.salon.timezone, context.salon.locale)}
                         </div>
                       </div>
                       <StatusBadge status={ticket.status} />
                     </div>
                     <div style={{ fontSize: 12, color: "var(--ink-soft)", display: "grid", gap: 3 }}>
                       <span>{ticket.service || "Service not selected"}</span>
-                      <span>{ticket.staff || "Any available staff"} · {ticket.branch}</span>
+                      <span>{ticket.staff || "Any available staff"} Â· {ticket.branch}</span>
                       {ticket.notes ? <span style={{ color: "var(--muted)" }}>{ticket.notes}</span> : null}
                     </div>
                     <div style={{ marginTop: "auto" }}>
@@ -142,3 +154,4 @@ export default async function QueuePage({ searchParams }: { searchParams: Promis
     </div>
   );
 }
+

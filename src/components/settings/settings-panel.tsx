@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -245,7 +257,7 @@ export function SalonProfilePanel({ salon }: { salon: SalonProfile }) {
             <div className="field" style={{ marginTop: 12 }}>
               <label htmlFor="logo-file" className="field-label">Replace logo</label>
               <input id="logo-file" type="file" className="input file-input" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={uploadLogo} disabled={uploading} />
-              <small>{uploading ? "Uploading…" : "PNG, JPEG, WebP, or SVG."}</small>
+              <small>{uploading ? "Uploadingâ€¦" : "PNG, JPEG, WebP, or SVG."}</small>
             </div>
           </div>
         </section>
@@ -254,7 +266,7 @@ export function SalonProfilePanel({ salon }: { salon: SalonProfile }) {
           <div className="card-body">
             <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={pending}>
               <Icon name="check" />
-              {pending ? "Saving…" : "Save settings"}
+              {pending ? "Savingâ€¦" : "Save settings"}
             </button>
           </div>
         </section>
@@ -322,7 +334,7 @@ export function BranchesPanel({ branches, canWrite }: { branches: Branch[]; canW
                   </div>
                   {branch.address ? <div className="cell-sub">{branch.address}</div> : null}
                 </td>
-                <td className="hide-mobile">{branch.phone || "—"}</td>
+                <td className="hide-mobile">{branch.phone || "â€”"}</td>
                 <td>
                   <span className={`badge ${branch.active ? "badge-success" : "badge-muted"}`}>
                     {branch.active ? "Open" : "Closed"}
@@ -403,7 +415,7 @@ function BranchDialog({ branch, onClose }: { branch: Branch | null; onClose: () 
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="branch-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Saving…" : branch ? "Save changes" : "Add branch"}
+            {pending ? "Savingâ€¦" : branch ? "Save changes" : "Add branch"}
           </button>
         </>
       }
@@ -428,3 +440,4 @@ function BranchDialog({ branch, onClose }: { branch: Branch | null; onClose: () 
     </Modal>
   );
 }
+

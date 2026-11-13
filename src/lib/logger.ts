@@ -1,4 +1,16 @@
-import "server-only";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import "server-only";
 
 type Level = "debug" | "info" | "warn" | "error";
 const order: Record<Level, number> = { debug: 10, info: 20, warn: 30, error: 40 };
@@ -24,3 +36,4 @@ export const logger = {
   warn: (message: string, context?: Record<string, unknown>) => write("warn", message, context),
   error: (message: string, context?: Record<string, unknown>) => write("error", message, context),
 };
+

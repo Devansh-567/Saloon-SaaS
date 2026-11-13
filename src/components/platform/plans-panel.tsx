@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,14 +67,14 @@ export function PlansPanel({ plans }: { plans: PlanRow[] }) {
                   <td>
                     <div className="cell-title">{plan.name}</div>
                     <div className="cell-sub">
-                      /{plan.slug} · {plan.features.length} feature{plan.features.length === 1 ? "" : "s"}
-                      {plan.description ? ` · ${plan.description}` : ""}
+                      /{plan.slug} Â· {plan.features.length} feature{plan.features.length === 1 ? "" : "s"}
+                      {plan.description ? ` Â· ${plan.description}` : ""}
                     </div>
                   </td>
                   <td className="num">{formatMoney(plan.monthlyPrice, "INR", "en-IN")}</td>
-                  <td className="num hide-mobile">{plan.yearlyPrice === null ? "—" : formatMoney(plan.yearlyPrice, "INR", "en-IN")}</td>
+                  <td className="num hide-mobile">{plan.yearlyPrice === null ? "â€”" : formatMoney(plan.yearlyPrice, "INR", "en-IN")}</td>
                   <td className="hide-mobile">
-                    {plan.limits.maxStaff || "∞"} staff · {plan.limits.maxBranches || "∞"} branches
+                    {plan.limits.maxStaff || "âˆž"} staff Â· {plan.limits.maxBranches || "âˆž"} branches
                   </td>
                   <td className="num hide-mobile">{plan.subscriptions}</td>
                   <td>
@@ -147,7 +159,7 @@ function PlanDialog({ plan, onClose }: { plan: PlanRow | null; onClose: () => vo
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="plan-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Saving…" : plan ? "Save changes" : "Create plan"}
+            {pending ? "Savingâ€¦" : plan ? "Save changes" : "Create plan"}
           </button>
         </>
       }
@@ -209,3 +221,4 @@ function PlanDialog({ plan, onClose }: { plan: PlanRow | null; onClose: () => vo
     </Modal>
   );
 }
+

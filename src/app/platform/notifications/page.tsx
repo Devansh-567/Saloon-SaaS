@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import Link from "next/link";
 import { listNotificationLogs, listTemplates } from "@/services/platform";
 import { formatDate } from "@/lib/utils";
@@ -29,7 +41,7 @@ export default async function PlatformNotificationsPage({
         <div>
           <h1>Notifications</h1>
           <p className="page-subtitle">
-            Templates and delivery logs. “Accepted” means the provider took the message — it is not proof of delivery.
+            Templates and delivery logs. â€œAcceptedâ€ means the provider took the message â€” it is not proof of delivery.
           </p>
         </div>
       </div>
@@ -131,3 +143,4 @@ async function LogsTab({ status, page }: { status?: string; page: number }) {
     </section>
   );
 }
+

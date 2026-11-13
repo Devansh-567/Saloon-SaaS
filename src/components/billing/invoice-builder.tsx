@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -222,7 +234,7 @@ export function InvoiceBuilder({
                           <option value="">Choose service</option>
                           {services.filter((item) => item.active).map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.name} · {formatMoney(item.price, currency, locale)}
+                              {item.name} Â· {formatMoney(item.price, currency, locale)}
                             </option>
                           ))}
                         </select>
@@ -236,7 +248,7 @@ export function InvoiceBuilder({
                           <option value="">Choose product</option>
                           {products.filter((item) => item.active).map((item) => (
                             <option key={item.id} value={item.id} disabled={item.stockQty <= 0}>
-                              {item.name} · {formatMoney(item.price, currency, locale)} · {item.stockQty} {item.unit}
+                              {item.name} Â· {formatMoney(item.price, currency, locale)} Â· {item.stockQty} {item.unit}
                             </option>
                           ))}
                         </select>
@@ -331,7 +343,7 @@ export function InvoiceBuilder({
               </div>
               <div>
                 <span>Discount</span>
-                <span>−{formatMoney(calculated?.discount || 0, currency, locale)}</span>
+                <span>âˆ’{formatMoney(calculated?.discount || 0, currency, locale)}</span>
               </div>
               <div>
                 <span>Tax</span>
@@ -347,7 +359,7 @@ export function InvoiceBuilder({
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {(["CASH", "UPI", "CARD"] as const).map((method) => (
                   <button key={method} type="button" className="btn btn-secondary btn-sm" onClick={() => payInFull(method)} disabled={!billTotal}>
-                    Paid in full · {paymentMethodLabel(method)}
+                    Paid in full Â· {paymentMethodLabel(method)}
                   </button>
                 ))}
               </div>
@@ -380,7 +392,7 @@ export function InvoiceBuilder({
             </div>
             <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 16 }} disabled={pending}>
               <Icon name="check" />
-              {pending ? "Saving bill…" : paidNow > 0 && balanceDue <= 0 ? "Complete bill" : "Save bill"}
+              {pending ? "Saving billâ€¦" : paidNow > 0 && balanceDue <= 0 ? "Complete bill" : "Save bill"}
             </button>
             <p className="hint" style={{ marginTop: 10, textAlign: "center" }}>
               Bill numbers are given automatically.
@@ -391,3 +403,4 @@ export function InvoiceBuilder({
     </form>
   );
 }
+

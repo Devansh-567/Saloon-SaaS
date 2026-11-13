@@ -1,4 +1,16 @@
-import type { Metadata } from "next";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { AUDIT_CATEGORIES, auditCategoryLabel, getAuditSummary, listAuditLogs } from "@/services/audit";
@@ -71,7 +83,7 @@ export default async function ActivityPage({
               href={`/activity?category=${category.id}`}
               className={`chip ${filters.category === category.id ? "" : "muted"}`}
             >
-              {category.label} · {category.count}
+              {category.label} Â· {category.count}
             </Link>
           ))}
         </div>
@@ -138,7 +150,7 @@ export default async function ActivityPage({
                       </td>
                       <td>
                         <span className="cell-title">{item.actionLabel}</span>
-                        <span className="cell-sub">{item.entityType}{item.entityId ? ` · ${item.entityId.slice(-6)}` : ""}</span>
+                        <span className="cell-sub">{item.entityType}{item.entityId ? ` Â· ${item.entityId.slice(-6)}` : ""}</span>
                       </td>
                       <td className="hide-mobile">
                         <span className="badge badge-plain">{item.categoryLabel || auditCategoryLabel(item.category)}</span>
@@ -147,7 +159,7 @@ export default async function ActivityPage({
                         {item.metadata && typeof item.metadata === "object" && Object.keys(item.metadata).length ? (
                           <code className="meta-code">{JSON.stringify(item.metadata)}</code>
                         ) : (
-                          "—"
+                          "â€”"
                         )}
                       </td>
                     </tr>
@@ -180,3 +192,4 @@ export default async function ActivityPage({
     </div>
   );
 }
+

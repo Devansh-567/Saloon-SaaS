@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -109,7 +121,7 @@ export function CommandPalette({
   const sections: Array<{ label: string; items: Item[] }> = [
     { label: "Quick actions", items: items.filter((item) => item.kind === "action") },
     { label: "Go to", items: items.filter((item) => item.kind === "nav") },
-    { label: searching && query.trim().length >= 2 ? "Searching customers…" : "Customers", items: items.filter((item) => item.kind === "customer") },
+    { label: searching && query.trim().length >= 2 ? "Searching customersâ€¦" : "Customers", items: items.filter((item) => item.kind === "customer") },
   ].filter((section) => section.items.length > 0);
 
   function choose(item: Item) {
@@ -152,7 +164,7 @@ export function CommandPalette({
             ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search…"
+            placeholder="Searchâ€¦"
             aria-label="Search actions, pages, and customers"
             autoComplete="off"
             spellCheck={false}
@@ -163,7 +175,7 @@ export function CommandPalette({
         </div>
         <div className="palette-list" ref={listRef}>
           {sections.length === 0 ? (
-            <div className="palette-empty">{searching ? "Searching…" : "No matches found."}</div>
+            <div className="palette-empty">{searching ? "Searchingâ€¦" : "No matches found."}</div>
           ) : (
             sections.map((section) => (
               <div key={section.label}>
@@ -196,10 +208,11 @@ export function CommandPalette({
             <Icon name="arrowDown" style={{ width: 12, height: 12 }} />
             Navigate
           </span>
-          <span>↵ Open</span>
+          <span>â†µ Open</span>
           <span>Esc Close</span>
         </div>
       </div>
     </div>
   );
 }
+

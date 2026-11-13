@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -83,7 +95,7 @@ export function SalaryPanel({
         <div className="card-head">
           <div>
             <h2>Salary payments</h2>
-            <p>{rows.length} payment{rows.length === 1 ? "" : "s"} · {formatMoney(total, currency, locale)} paid</p>
+            <p>{rows.length} payment{rows.length === 1 ? "" : "s"} Â· {formatMoney(total, currency, locale)} paid</p>
           </div>
           {canWrite ? (
             <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)} disabled={!members.length}>
@@ -117,7 +129,7 @@ export function SalaryPanel({
                       </div>
                     </td>
                     <td>
-                      <span className="cell-title">{formatDateOnly(row.periodStart, locale)} – {formatDateOnly(row.periodEnd, locale)}</span>
+                      <span className="cell-title">{formatDateOnly(row.periodStart, locale)} â€“ {formatDateOnly(row.periodEnd, locale)}</span>
                     </td>
                     <td className="hide-mobile num">{formatMoney(row.baseAmount, currency, locale)}</td>
                     <td className="hide-mobile num">{formatMoney(row.bonus, currency, locale)}</td>
@@ -242,7 +254,7 @@ function SalaryDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="salary-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Saving…" : "Save payment"}
+            {pending ? "Savingâ€¦" : "Save payment"}
           </button>
         </>
       }
@@ -309,3 +321,4 @@ function SalaryDialog({
     </Modal>
   );
 }
+

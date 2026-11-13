@@ -1,4 +1,16 @@
-import { after } from "next/server";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ import { after } from "next/server";
 import "server-only";
 import type { z } from "zod";
 import { PlatformRole, Role } from "@prisma/client";
@@ -318,3 +330,4 @@ export async function mySalons(context: TenantContext) {
     orderBy: { createdAt: "asc" },
   });
 }
+

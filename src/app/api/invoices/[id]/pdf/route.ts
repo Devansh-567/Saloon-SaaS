@@ -1,3 +1,5 @@
+// 2026 Devansh Singh
+// Guru AI Technologies
 import { NextRequest, NextResponse } from "next/server";
 import { withApi } from "@/lib/api";
 import { requireApiTenant } from "@/lib/auth";

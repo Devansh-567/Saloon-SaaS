@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { AuthBrand } from "@/components/brand/auth-brand";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -119,7 +131,7 @@ export function RegisterForm() {
           </div>
         </div>
         <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 20 }} disabled={pending}>
-          {pending ? "Creating workspace…" : "Create salon workspace"}
+          {pending ? "Creating workspaceâ€¦" : "Create salon workspace"}
         </button>
       </form>
       <p className="auth-footer">
@@ -128,3 +140,4 @@ export function RegisterForm() {
     </div>
   );
 }
+

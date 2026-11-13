@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -133,7 +145,7 @@ export function CustomerCrm({
                     <div style={{ fontWeight: 600, fontSize: 13 }}>{item.title}</div>
                     <div className="cell-sub">
                       Due {formatDate(item.dueAt, timezone, locale)}
-                      {item.assignedTo ? ` · ${item.assignedTo}` : ""}
+                      {item.assignedTo ? ` Â· ${item.assignedTo}` : ""}
                     </div>
                     {item.notes ? <p className="hint" style={{ margin: "5px 0 0" }}>{item.notes}</p> : null}
                   </div>
@@ -184,13 +196,13 @@ export function CustomerCrm({
                 className="textarea"
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
-                placeholder="Likes a quiet chair, allergic to ammonia, prefers evening slots…"
+                placeholder="Likes a quiet chair, allergic to ammonia, prefers evening slotsâ€¦"
                 required
               />
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
               <button type="submit" className="btn btn-primary btn-sm" disabled={notePending || !note.trim()}>
-                {notePending ? "Adding…" : "Add note"}
+                {notePending ? "Addingâ€¦" : "Add note"}
               </button>
             </div>
           </form>
@@ -202,7 +214,7 @@ export function CustomerCrm({
                 <div style={{ fontSize: 12.5, whiteSpace: "pre-wrap" }}>{item.body}</div>
                 <div className="cell-sub" style={{ display: "flex", alignItems: "center", gap: 7, marginTop: 5 }}>
                   <span className="avatar" style={{ width: 20, height: 20, fontSize: 8 }}>{initials(item.author)}</span>
-                  {item.author} · {formatDay(item.createdAt, timezone, locale)}
+                  {item.author} Â· {formatDay(item.createdAt, timezone, locale)}
                 </div>
               </div>
             ))}
@@ -274,7 +286,7 @@ function FollowUpDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="follow-up-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Saving…" : "Add reminder"}
+            {pending ? "Savingâ€¦" : "Add reminder"}
           </button>
         </>
       }
@@ -308,3 +320,4 @@ function FollowUpDialog({
     </Modal>
   );
 }
+

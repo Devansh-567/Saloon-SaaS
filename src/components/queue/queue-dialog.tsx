@@ -1,139 +1,110 @@
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiRequest, clearUrlParam, errorMessage } from "@/lib/client";
-import { useToast } from "@/components/ui/toast";
-import { Modal } from "@/components/ui/modal";
-import { CustomerPicker } from "@/components/forms/customer-picker";
-import { Icon } from "@/components/ui/icons";
 
-type Option = { id: string; name: string; active?: boolean; branchId?: string | null };
+import { qr } from "lucide-react";
 
-export function QueueDialog({
-  branches,
-  services,
-  staff,
-  autoOpen,
-}: {
-  branches: Array<{ id: string; name: string; active: boolean }>;
-  services: Option[];
-  staff: Option[];
-  autoOpen?: boolean;
-}) {
+type QueueDialogResult = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  status: "idle" | "joining" | "active" | "completed";
+  setStatus: (status: QueueDialogResult["status"]) => void;
+};
+
+export function QueueDialog({ onClose }: { onClose: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState("idle");
+  const [code, setCode] = useState("");
+  const [isConnecting, setIsConnecting] = useState(false);
+
   const router = useRouter();
-  const toast = useToast();
-  const [open, setOpen] = useState(Boolean(autoOpen));
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
 
-  function close() {
-    setOpen(false);
-    if (autoOpen) clearUrlParam("walkin");
-  }
-
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    setPending(true);
-    setError("");
+  const join = async (code: string) => {
+    setIsConnecting(true);
+    setStatus("joining");
     try {
-      await apiRequest("/api/queue", {
+      const response = await apiRequest("/api/queue/join", {
         method: "POST",
-        body: JSON.stringify({
-          branchId: form.get("branchId"),
-          name: form.get("name"),
-          phone: form.get("phone") || undefined,
-          customerId: form.get("customerId") || null,
-          serviceId: form.get("serviceId") || null,
-          staffMembershipId: form.get("staffMembershipId") || null,
-          notes: form.get("notes") || undefined,
-        }),
+        body: JSON.stringify({ code }),
       });
-      toast.success("Added to the waiting list.");
-      close();
-      router.refresh();
+      const data = await response.json();
+      setStatus("active");
+      setCode("");
+      if (data.redirect) {
+        router.push(data.redirect);
+      }
     } catch (err) {
-      setError(errorMessage(err));
+      console.error("Failed to join queue:", err);
+      setStatus("idle");
     } finally {
-      setPending(false);
+      setIsConnecting(false);
     }
-  }
+  };
 
   return (
-    <>
-      <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
-        <Icon name="plus" /> Add to waiting list
-      </button>
-      <Modal
-        open={open}
-        onClose={close}
-        title="Add to waiting list"
-        description="A waiting number is given automatically."
-        footer={
-          <>
-            <button type="button" className="btn btn-secondary" onClick={close} disabled={pending}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white rounded-lg w-full max-w-md mx-4 transform overflow-hidden">
+        <div className="p-6">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900">Join Queue</h2>
+          {status === "idle" && (
+            <p className="mb-4 text-gray-600">
+              Enter the queue code to join the stylist's queue.
+            </p>
+          )}
+          {status === "joining" && (
+            <p className="mb-4 text-gray-600">
+              Connecting to the queue&hellip;
+            </p>
+          )}
+          {status === "active" && (
+            <div className="mb-4 flex items-center space-x-3">
+              <span className="text-gray-500">Queue Code: </span>
+              <input
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                readOnly
+                className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus outline-none focus-border-color"
+              />
+            </div>
+          )}
+          {status === "completed" && (
+            <p className="mb-4 text-green-600">You've been added to the queue!</p>
+          )}
+          {isConnecting && (
+            <p className="mb-4 text-gray-600">Connecting&hellip;</p>
+          )}
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setOpen(false)}
+              className="mr-2 px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-lg hover:bg-gray-700"
+            >
               Cancel
             </button>
-            <button type="submit" form="queue-form" className="btn btn-primary" disabled={pending}>
-              {pending ? "Adding…" : "Add to list"}
+            <button
+              onClick={() => join(code)}
+              disabled={!code || isConnecting}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-500 disabled:opacity-50"
+            >
+              {isConnecting ? "Connecting..." : "Join Queue"}
             </button>
-          </>
-        }
-      >
-        {error ? <div className="alert alert-error">{error}</div> : null}
-        <form id="queue-form" onSubmit={submit}>
-          <div className="form-grid">
-            <div className="field span-2">
-              <CustomerPicker required={false} />
-            </div>
-            <div className="field">
-              <label htmlFor="queue-name">Customer name</label>
-              <input id="queue-name" name="name" className="input" required placeholder="Name to call" />
-            </div>
-            <div className="field">
-              <label htmlFor="queue-phone">Phone</label>
-              <input id="queue-phone" name="phone" type="tel" className="input" placeholder="Optional" />
-            </div>
-            <div className="field">
-              <label htmlFor="queue-branch">Branch</label>
-              <select id="queue-branch" name="branchId" className="select" required>
-                {branches.filter((branch) => branch.active).map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="queue-service">Service</label>
-              <select id="queue-service" name="serviceId" className="select">
-                <option value="">Not decided</option>
-                {services.filter((service) => service.active !== false).map((service) => (
-                  <option key={service.id} value={service.id}>
-                    {service.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor="queue-staff">Preferred staff</label>
-              <select id="queue-staff" name="staffMembershipId" className="select">
-                <option value="">Any available</option>
-                {staff.map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {member.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field span-2">
-              <label htmlFor="queue-notes">Notes</label>
-              <textarea id="queue-notes" name="notes" className="textarea" />
-            </div>
           </div>
-        </form>
-      </Modal>
-    </>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -103,7 +115,7 @@ export function DocumentPanel({
                       <a href={`/api/files/${row.fileId}`} target="_blank" rel="noreferrer" className="link cell-title">
                         {row.title}
                       </a>
-                      <div className="cell-sub">{row.fileName} · {fileSize(row.size)}</div>
+                      <div className="cell-sub">{row.fileName} Â· {fileSize(row.size)}</div>
                     </td>
                     <td className="hide-mobile">{DOCUMENT_KIND_LABELS[row.kind as DocumentKindValue] || row.kind}</td>
                     <td className="hide-mobile">{formatDay(row.createdAt, timezone, locale)}</td>
@@ -140,7 +152,7 @@ export function DocumentPanel({
         onClose={() => setDeleting(null)}
         onConfirm={remove}
         title="Delete document?"
-        message={deleting ? `“${deleting.title}” will be removed permanently.` : ""}
+        message={deleting ? `â€œ${deleting.title}â€ will be removed permanently.` : ""}
         confirmLabel="Delete"
         danger
         pending={deletePending}
@@ -192,7 +204,7 @@ function UploadDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="document-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Uploading…" : "Upload"}
+            {pending ? "Uploadingâ€¦" : "Upload"}
           </button>
         </>
       }
@@ -231,3 +243,4 @@ function UploadDialog({
     </Modal>
   );
 }
+

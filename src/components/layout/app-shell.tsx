@@ -1,4 +1,16 @@
-"use client";
+﻿# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
+// 2026 Devansh Singh
+// Guru AI Technologies
+ "use client";
 
 import { PoweredBy } from "@/components/brand/company-logo";
 import Link from "next/link";
@@ -61,7 +73,7 @@ export function AppShell({
   }, [pathname]);
 
   useEffect(() => {
-    if (typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform)) setShortcut("⌘ K");
+    if (typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform)) setShortcut("âŒ˜ K");
   }, []);
 
   useEffect(() => {
@@ -183,7 +195,7 @@ export function AppShell({
           <div className="topbar-right">
             <button type="button" className="topbar-search" onClick={() => setPaletteOpen(true)} aria-label="Search and commands">
               <Icon name="search" />
-              <span className="topbar-search-label">Search…</span>
+              <span className="topbar-search-label">Searchâ€¦</span>
               <span className="kbd">{shortcut}</span>
             </button>
             <QuickCreateMenu permissions={permissions} />
@@ -265,3 +277,4 @@ export function AppShell({
     </div>
   );
 }
+

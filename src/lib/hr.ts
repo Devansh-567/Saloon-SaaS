@@ -8,8 +8,6 @@
 # or use of this software, in whole or in part,
 # is strictly prohibited without prior written
 # permission from Guru AI Technologies.
-// 2026 Devansh Singh
-// Guru AI Technologies
  export const ATTENDANCE_STATUSES = ["PRESENT", "HALF_DAY", "ABSENT", "LEAVE", "HOLIDAY", "WEEK_OFF"] as const;
 export type AttendanceStatusValue = (typeof ATTENDANCE_STATUSES)[number];
 

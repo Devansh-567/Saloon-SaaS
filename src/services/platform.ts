@@ -8,8 +8,6 @@
 # or use of this software, in whole or in part,
 # is strictly prohibited without prior written
 # permission from Guru AI Technologies.
-// 2026 Devansh Singh
-// Guru AI Technologies
  import "server-only";
 import { PlatformRole, Prisma, SalonStatus, SubscriptionStatus, Role } from "@prisma/client";
 import type { z } from "zod";

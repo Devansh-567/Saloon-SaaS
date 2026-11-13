@@ -8,8 +8,6 @@
 # or use of this software, in whole or in part,
 # is strictly prohibited without prior written
 # permission from Guru AI Technologies.
-// 2026 Devansh Singh
-// Guru AI Technologies
  const styles: Record<string, string> = {
   ACTIVE: "badge-success",
   PAID: "badge-success",

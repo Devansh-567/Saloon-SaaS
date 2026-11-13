@@ -1,3 +1,13 @@
+# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
 # Saloon SaaS
 
 Saalon SaaS is a complete web application for managing salon operations. Handle appointments, billing, inventory, staff, and customer reports all in one platform.
@@ -56,7 +66,7 @@ See `.env.example` for all available variables. Key settings include:
 
 ## License
 
-Private License
+MIT License - see the LICENSE file for details. This permit-free license allows commercial use, modification, and distribution of the software.
 
 ## Support
 

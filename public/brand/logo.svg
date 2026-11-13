@@ -1,3 +1,13 @@
+# Copyright (c) 2026 Devansh Singh
+# All Rights Reserved.
+#
+# This software and its source code are proprietary
+# and confidential property of Guru AI Technologies.
+#
+# Unauthorized copying, modification, distribution,
+# or use of this software, in whole or in part,
+# is strictly prohibited without prior written
+# permission from Guru AI Technologies.
 <svg xmlns="http://www.w3.org/2000/svg" width="180" height="44" viewBox="0 0 180 44" role="img" aria-label="Your logo here">
   <rect x="1" y="1" width="178" height="42" rx="10" fill="none" stroke="#8a8f98" stroke-width="2" stroke-dasharray="5 4"/>
   <text x="90" y="28" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#5b6270">YOUR LOGO HERE</text>

@@ -8,8 +8,6 @@
 # or use of this software, in whole or in part,
 # is strictly prohibited without prior written
 # permission from Guru AI Technologies.
-// 2026 Devansh Singh
-// Guru AI Technologies
  import { Icon, type IconName } from "@/components/ui/icons";
 import { CompanyLogo, PoweredBy } from "@/components/brand/company-logo";
 import { BRAND } from "@/lib/brand";

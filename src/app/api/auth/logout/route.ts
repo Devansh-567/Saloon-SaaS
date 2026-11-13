@@ -8,8 +8,6 @@
 # or use of this software, in whole or in part,
 # is strictly prohibited without prior written
 # permission from Guru AI Technologies.
-// 2026 Devansh Singh
-// Guru AI Technologies
  import { NextRequest } from "next/server";
 import { withApi, ok } from "@/lib/api";
 import { destroySession, getVerifiedViewer } from "@/lib/auth";

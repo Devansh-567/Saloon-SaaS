@@ -8,8 +8,6 @@
 # or use of this software, in whole or in part,
 # is strictly prohibited without prior written
 # permission from Guru AI Technologies.
-// 2026 Devansh Singh
-// Guru AI Technologies
  import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";

@@ -56,7 +56,7 @@ See `.env.example` for all available variables. Key settings include:
 
 ## License
 
-MIT License - see the LICENSE file for details. This permit-free license allows commercial use, modification, and distribution of the software.
+Private License
 
 ## Support
 

@@ -1,13 +1,3 @@
-# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 import { randomBytes } from "node:crypto";
 import { existsSync, writeFileSync } from "node:fs";
 
@@ -23,7 +13,6 @@ DATABASE_URL=postgresql://salon:${dbPassword}@localhost:5434/salon_saas?schema=p
 DB_PASSWORD=${dbPassword}
 APP_SECRET=${secret()}
 MFA_ENCRYPTION_KEY=${secret()}
-STORAGE_ROOT=./storage
 MAX_UPLOAD_MB=5
 SESSION_TTL_HOURS=12
 SESSION_IDLE_MINUTES=120

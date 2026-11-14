@@ -1,13 +1,3 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
@@ -19,36 +9,53 @@ type ToastContextValue = {
   toast: (message: string, kind?: ToastKind) => void;
   success: (message: string) => void;
   error: (message: string) => void;
-  info: (message: string) => void;
 };
 
-const ToastContext = createContext<ToastContextValue | undefined>(undefined);
+const ToastContext = createContext<ToastContextValue | null>(null);
+let nextId = 1;
+
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [items, setItems] = useState<Toast[]>([]);
+
+  const remove = useCallback((id: number) => {
+    setItems((current) => current.filter((item) => item.id !== id));
+  }, []);
+
+  const toast = useCallback(
+    (message: string, kind: ToastKind = "info") => {
+      const id = nextId++;
+      setItems((current) => [...current.slice(-3), { id, message, kind }]);
+      window.setTimeout(() => remove(id), 4500);
+    },
+    [remove],
+  );
+
+  const value = useMemo<ToastContextValue>(
+    () => ({
+      toast,
+      success: (message) => toast(message, "success"),
+      error: (message) => toast(message, "error"),
+    }),
+    [toast],
+  );
+
+  return (
+    <ToastContext.Provider value={value}>
+      {children}
+      <div className="toast-stack" aria-live="polite">
+        {items.map((item) => (
+          <div key={item.id} className={`toast ${item.kind}`}>
+            <Icon name={item.kind === "success" ? "check" : item.kind === "error" ? "alert" : "info"} />
+            <span>{item.message}</span>
+          </div>
+        ))}
+      </div>
+    </ToastContext.Provider>
+  );
+}
 
 export function useToast() {
   const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
-  }
+  if (!context) throw new Error("useToast must be used within ToastProvider");
   return context;
 }
-
-export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const toast = useCallback((message: string, kind?: ToastKind) => {
-    const id = Date.now() + Math.random();
-    const newToast: Toast = { id, message, kind };
-    setToasts((prev) => [...prev, newToast]);
-    return id;
-  }, []);
-
-  const removeToast = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  }, []);
-
-  return (
-    <ToastContext.Provider value={{ toast, success: toast, error: toast, info: toast, removeToast }}>
-      {children}
-    </ToastContext.Provider>
-  );
-};

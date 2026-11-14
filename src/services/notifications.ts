@@ -1,16 +1,7 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import { logger } from "@/lib/logger";
+import { sendEmail } from "@/lib/mail";
+import "server-only";
 import { NotificationChannel, NotificationStatus } from "@prisma/client";
-import nodemailer from "nodemailer";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
 import type { TenantContext } from "@/lib/auth";
@@ -19,16 +10,6 @@ import { getInvoicePdfBytes } from "./invoice-pdf";
 
 function render(template: string, variables: Record<string, string>) {
   return template.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, key: string) => variables[key] ?? "");
-}
-
-function emailTransport() {
-  if (!env.SMTP_HOST || !env.MAIL_FROM) return null;
-  return nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT || 587,
-    secure: env.SMTP_SECURE,
-    ...(env.SMTP_USER ? { auth: { user: env.SMTP_USER, pass: env.SMTP_PASS } } : {}),
-  });
 }
 
 function twilioConfigured(channel: NotificationChannel) {
@@ -58,17 +39,12 @@ async function sendTwilio(channel: NotificationChannel, to: string, body: string
   return payload.sid || null;
 }
 
-export function emailIsConfigured() {
-  return Boolean(env.SMTP_HOST && env.MAIL_FROM);
-}
-
 export async function sendSystemEmail(input: { to: string; subject: string; text: string }) {
-  const transport = emailTransport();
-  if (!transport) return false;
   try {
-    const result = await transport.sendMail({ from: env.MAIL_FROM, to: input.to, subject: input.subject, text: input.text });
-    return Boolean(result.accepted?.length);
-  } catch {
+    await sendEmail(input);
+    return true;
+  } catch (error) {
+    logger.error("system_email_failed", { error: error instanceof Error ? error.message : String(error) });
     return false;
   }
 }
@@ -118,19 +94,12 @@ export async function sendNotification(input: {
   try {
     let providerRef: string | null = null;
     if (input.channel === "EMAIL") {
-      const transport = emailTransport();
-      if (!transport) throw new Error("SMTP is not configured");
-      const result = await transport.sendMail({
-        from: env.MAIL_FROM,
+      providerRef = await sendEmail({
         to: input.recipient,
         subject: subject || "Salon notification",
         text: body,
-        ...(input.attachment
-          ? { attachments: [{ filename: input.attachment.filename, content: input.attachment.content }] }
-          : {}),
+        attachment: input.attachment,
       });
-      if (!result.accepted?.length) throw new Error("SMTP server did not accept the message");
-      providerRef = result.messageId || null;
     } else {
       if (!twilioConfigured(input.channel)) throw new Error("Twilio is not configured for this channel");
       providerRef = await sendTwilio(input.channel, input.recipient, body);
@@ -181,4 +150,3 @@ export async function sendInvoiceNotification(context: TenantContext, invoiceId:
     },
   });
 }
-

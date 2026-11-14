@@ -1,13 +1,3 @@
-# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 import { onlinePaymentsEnabled } from "@/services/online-payments";
 import { BRAND } from "@/lib/brand";
 import { PoweredBy } from "@/components/brand/company-logo";
@@ -96,7 +86,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             {invoice.customer ? (
               <>
                 <strong>{invoice.customer.name}</strong>
-                <span>{invoice.customer.phone}</span>
+                {invoice.customer.phone ? <span>{invoice.customer.phone}</span> : null}
                 {invoice.customer.email ? <span>{invoice.customer.email}</span> : null}
               </>
             ) : (
@@ -149,7 +139,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
               <span>{formatMoney(invoice.subtotal, context.salon.currency, context.salon.locale)}</span>
             </div>
             <div>
-              <span>Discount</span>
+              <span>Discount{invoice.pointsRedeemed > 0 ? ` (includes ${invoice.pointsRedeemed} reward points)` : ""}</span>
               <span>−{formatMoney(invoice.discount, context.salon.currency, context.salon.locale)}</span>
             </div>
             <div>

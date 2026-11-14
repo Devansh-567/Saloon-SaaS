@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- export const PERMISSIONS = [
+export const PERMISSIONS = [
   "appointments.read",
   "appointments.write",
   "queue.read",
@@ -175,7 +165,7 @@ export function effectivePermissions(
   overrides?: unknown,
   rolePermissions?: readonly string[] | null,
 ): Permission[] {
-  if (role === "OWNER") return ALL;
+  if (role === "OWNER") return ALL.filter((permission) => permission !== "hr.self");
   const base = Array.isArray(rolePermissions) ? sanitizePermissions(rolePermissions) : ROLE_DEFAULTS[role];
   const defaults = new Set(base);
   const { grant = [], revoke = [] } = parseOverrides(overrides);
@@ -192,4 +182,3 @@ export function roleHasPermission(
 ) {
   return effectivePermissions(role, overrides, rolePermissions).includes(permission);
 }
-

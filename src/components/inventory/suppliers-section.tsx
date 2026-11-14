@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -85,9 +75,9 @@ export function SuppliersSection({ suppliers, canWrite }: { suppliers: Supplier[
                       <div className="cell-title">{supplier.name}</div>
                       {supplier.notes ? <div className="cell-sub">{supplier.notes}</div> : null}
                     </td>
-                    <td>{supplier.phone || "â€”"}</td>
-                    <td className="hide-mobile">{supplier.email || "â€”"}</td>
-                    <td className="hide-mobile">{supplier.address || "â€”"}</td>
+                    <td>{supplier.phone || "—"}</td>
+                    <td className="hide-mobile">{supplier.email || "—"}</td>
+                    <td className="hide-mobile">{supplier.address || "—"}</td>
                     <td>
                       <span className={`badge ${supplier.active ? "badge-success" : "badge-muted"}`}>
                         {supplier.active ? "Active" : "Inactive"}
@@ -126,7 +116,7 @@ export function SuppliersSection({ suppliers, canWrite }: { suppliers: Supplier[
         onClose={() => setDeleting(null)}
         onConfirm={remove}
         title="Delete supplier?"
-        message={deleting ? `â€œ${deleting.name}â€ will be removed. If purchases or products still point to this supplier, it is archived instead.` : ""}
+        message={deleting ? `“${deleting.name}” will be removed. If purchases or products still point to this supplier, it is archived instead.` : ""}
         confirmLabel="Delete"
         danger
         pending={deletePending}
@@ -178,7 +168,7 @@ function SupplierDialog({ supplier, onClose }: { supplier?: Supplier; onClose: (
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="supplier-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : supplier ? "Save changes" : "Add supplier"}
+            {pending ? "Saving…" : supplier ? "Save changes" : "Add supplier"}
           </button>
         </>
       }
@@ -209,7 +199,7 @@ function SupplierDialog({ supplier, onClose }: { supplier?: Supplier; onClose: (
           <div className="field span-2">
             <label className="switch">
               <input type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} />
-              <span>{active ? "Active â€” can be linked to products and purchases" : "Inactive â€” keep for history only"}</span>
+              <span>{active ? "Active — can be linked to products and purchases" : "Inactive — keep for history only"}</span>
             </label>
           </div>
         </div>
@@ -217,4 +207,3 @@ function SupplierDialog({ supplier, onClose }: { supplier?: Supplier; onClose: (
     </Modal>
   );
 }
-

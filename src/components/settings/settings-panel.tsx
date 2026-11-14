@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,7 +45,6 @@ type SalonSettings = {
   receiptHeader: string;
   receiptFooter: string;
   showLogo: boolean;
-  loyaltyPointsPerCurrency: number;
   invoiceDueDays: number;
   allowWalkIns: boolean;
   notifyOnInvoice: boolean;
@@ -101,7 +90,6 @@ export function SalonProfilePanel({ salon }: { salon: SalonProfile }) {
             accentColor: form.get("accentColor"),
             receiptHeader: form.get("receiptHeader") || "",
             receiptFooter: form.get("receiptFooter") || "",
-            loyaltyPointsPerCurrency: Number(form.get("loyaltyPointsPerCurrency")) || 0,
             invoiceDueDays: Number(form.get("invoiceDueDays")) || 0,
             showLogo: form.get("showLogo") === "on",
             allowWalkIns: form.get("allowWalkIns") === "on",
@@ -210,10 +198,6 @@ export function SalonProfilePanel({ salon }: { salon: SalonProfile }) {
                 <label htmlFor="salon-due">Days allowed to pay</label>
                 <input id="salon-due" name="invoiceDueDays" type="number" min={0} max={365} className="input" defaultValue={salon.settings.invoiceDueDays} />
               </div>
-              <div className="field">
-                <label htmlFor="salon-loyalty">Reward points for every 1 spent</label>
-                <input id="salon-loyalty" name="loyaltyPointsPerCurrency" type="number" min={0} max={100} step="0.1" className="input" defaultValue={salon.settings.loyaltyPointsPerCurrency} />
-              </div>
               <div className="field span-2">
                 <label htmlFor="salon-receipt-header">Receipt header</label>
                 <input id="salon-receipt-header" name="receiptHeader" className="input" defaultValue={salon.settings.receiptHeader} maxLength={200} />
@@ -255,7 +239,7 @@ export function SalonProfilePanel({ salon }: { salon: SalonProfile }) {
             <div className="field" style={{ marginTop: 12 }}>
               <label htmlFor="logo-file" className="field-label">Replace logo</label>
               <input id="logo-file" type="file" className="input file-input" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={uploadLogo} disabled={uploading} />
-              <small>{uploading ? "Uploadingâ€¦" : "PNG, JPEG, WebP, or SVG."}</small>
+              <small>{uploading ? "Uploading…" : "PNG, JPEG, WebP, or SVG."}</small>
             </div>
           </div>
         </section>
@@ -264,7 +248,7 @@ export function SalonProfilePanel({ salon }: { salon: SalonProfile }) {
           <div className="card-body">
             <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={pending}>
               <Icon name="check" />
-              {pending ? "Savingâ€¦" : "Save settings"}
+              {pending ? "Saving…" : "Save settings"}
             </button>
           </div>
         </section>
@@ -332,7 +316,7 @@ export function BranchesPanel({ branches, canWrite }: { branches: Branch[]; canW
                   </div>
                   {branch.address ? <div className="cell-sub">{branch.address}</div> : null}
                 </td>
-                <td className="hide-mobile">{branch.phone || "â€”"}</td>
+                <td className="hide-mobile">{branch.phone || "—"}</td>
                 <td>
                   <span className={`badge ${branch.active ? "badge-success" : "badge-muted"}`}>
                     {branch.active ? "Open" : "Closed"}
@@ -413,7 +397,7 @@ function BranchDialog({ branch, onClose }: { branch: Branch | null; onClose: () 
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="branch-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : branch ? "Save changes" : "Add branch"}
+            {pending ? "Saving…" : branch ? "Save changes" : "Add branch"}
           </button>
         </>
       }
@@ -438,4 +422,3 @@ function BranchDialog({ branch, onClose }: { branch: Branch | null; onClose: () 
     </Modal>
   );
 }
-

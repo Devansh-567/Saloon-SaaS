@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import { LeaveStatus, Prisma, type Role } from "@prisma/client";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -154,7 +144,7 @@ export type HrMember = {
 
 export async function listHrMembers(context: TenantContext): Promise<HrMember[]> {
   const members = await prisma.membership.findMany({
-    where: { salonId: context.salon.id },
+    where: { salonId: context.salon.id, role: { not: "OWNER" } },
     include: { ...memberInclude, _count: { select: { employeeDocuments: true } } },
     orderBy: [{ active: "desc" }, { user: { name: "asc" } }],
   });
@@ -176,7 +166,7 @@ export async function getHrSummary(context: TenantContext) {
   const date = dateOnlyFromInput(todayInput(context));
   const range = monthRange(context);
   const [members, records, pendingLeave, pendingAdvances, payroll, missingDocs] = await Promise.all([
-    prisma.membership.count({ where: { salonId: context.salon.id, active: true } }),
+    prisma.membership.count({ where: { salonId: context.salon.id, active: true, role: { not: "OWNER" } } }),
     prisma.attendanceRecord.groupBy({
       by: ["status"],
       where: { salonId: context.salon.id, date },
@@ -197,6 +187,7 @@ export async function getHrSummary(context: TenantContext) {
       where: {
         salonId: context.salon.id,
         active: true,
+        role: { not: "OWNER" },
         OR: [{ staffProfile: null }, { staffProfile: { aadhaarNumber: null } }, { staffProfile: { panNumber: null } }],
       },
     }),
@@ -223,7 +214,7 @@ export async function listAttendance(context: TenantContext, date: string) {
   const day = dateOnlyFromInput(date);
   const [members, records] = await Promise.all([
     prisma.membership.findMany({
-      where: { salonId: context.salon.id, active: true },
+      where: { salonId: context.salon.id, active: true, role: { not: "OWNER" } },
       include: memberInclude,
       orderBy: { user: { name: "asc" } },
     }),
@@ -253,7 +244,7 @@ export async function listAttendance(context: TenantContext, date: string) {
 
 async function ensureMember(context: TenantContext, membershipId: string) {
   const member = await prisma.membership.findFirst({
-    where: { id: membershipId, salonId: context.salon.id },
+    where: { id: membershipId, salonId: context.salon.id, role: { not: "OWNER" } },
     include: { user: { select: { name: true } }, staffProfile: true },
   });
   if (!member) throw notFound("Staff member not found");
@@ -338,7 +329,7 @@ export async function deleteAttendance(context: TenantContext, recordId: string)
 export async function bulkMarkAttendance(context: TenantContext, input: AttendanceBulkInput) {
   assertHrWrite(context);
   const members = await prisma.membership.findMany({
-    where: { id: { in: input.membershipIds }, salonId: context.salon.id },
+    where: { id: { in: input.membershipIds }, salonId: context.salon.id, role: { not: "OWNER" } },
     include: { user: { select: { name: true } } },
   });
   if (members.length !== input.membershipIds.length) throw badRequest("One or more staff members were not found");
@@ -384,6 +375,7 @@ export async function listLeaveRequests(context: TenantContext, filter: { status
   const requests = await prisma.leaveRequest.findMany({
     where: {
       salonId: context.salon.id,
+      membership: { role: { not: "OWNER" } },
       ...(filter.status ? { status: filter.status } : {}),
       ...(filter.membershipId ? { membershipId: filter.membershipId } : {}),
     },
@@ -502,6 +494,7 @@ export async function listAdvances(context: TenantContext, filter: { status?: st
   const rows = await prisma.salaryAdvance.findMany({
     where: {
       salonId: context.salon.id,
+      membership: { role: { not: "OWNER" } },
       ...(filter.status ? { status: filter.status as never } : {}),
       ...(filter.membershipId ? { membershipId: filter.membershipId } : {}),
     },
@@ -596,6 +589,7 @@ export async function listSalaryPayments(
   const rows = await prisma.salaryPayment.findMany({
     where: {
       salonId: context.salon.id,
+      membership: { role: { not: "OWNER" } },
       ...(filter.membershipId ? { membershipId: filter.membershipId } : {}),
       ...(from || to ? { periodStart: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) } } : {}),
     },
@@ -742,7 +736,7 @@ export async function listDocuments(context: TenantContext, membershipId?: strin
   }
   const scope = canSeeAllHr(context) ? membershipId : context.membership.id;
   const rows = await prisma.employeeDocument.findMany({
-    where: { salonId: context.salon.id, ...(scope ? { membershipId: scope } : {}) },
+    where: { salonId: context.salon.id, membership: { role: { not: "OWNER" } }, ...(scope ? { membershipId: scope } : {}) },
     include: { membership: { include: { user: { select: { name: true } } } }, file: true },
     orderBy: { createdAt: "desc" },
   });
@@ -1021,4 +1015,3 @@ export async function getMyWork(context: TenantContext) {
     profile: employeeProfileDto(await prisma.staffProfile.findUnique({ where: { membershipId: context.membership.id } })),
   };
 }
-

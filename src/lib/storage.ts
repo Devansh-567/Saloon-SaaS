@@ -1,19 +1,9 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import "server-only";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
+import { prisma } from "./prisma";
 import { env } from "./env";
-import { badRequest, forbidden } from "./errors";
+import { badRequest, notFound } from "./errors";
 
 export type AllowedFileKind = "LOGO" | "DOCUMENT" | "INVOICE" | "RECEIPT";
 
@@ -22,20 +12,8 @@ const allowedTypes = {
   DOCUMENT: ["application/pdf", "image/png", "image/jpeg", "image/webp"],
 };
 
-export const storageRoot = path.resolve(env.STORAGE_ROOT);
-
 function folderFor(kind: AllowedFileKind) {
   return kind === "LOGO" ? "logos" : kind === "INVOICE" || kind === "RECEIPT" ? "invoices" : "documents";
-}
-
-export async function ensureStorage(salonId?: string) {
-  await mkdir(storageRoot, { recursive: true, mode: 0o700 });
-  if (!salonId) return;
-  await Promise.all(
-    ["logos", "documents", "invoices"].map((folder) =>
-      mkdir(path.join(storageRoot, "salons", salonId, folder), { recursive: true, mode: 0o700 }),
-    ),
-  );
 }
 
 function detectType(bytes: Uint8Array): { mime: string; ext: string } | null {
@@ -58,34 +36,7 @@ function detectType(bytes: Uint8Array): { mime: string; ext: string } | null {
   return null;
 }
 
-export function safeRelativePath(relativePath: string) {
-  if (relativePath.includes("\0") || path.isAbsolute(relativePath)) throw forbidden("Invalid file path");
-  const resolved = path.resolve(storageRoot, relativePath);
-  if (!resolved.startsWith(storageRoot + path.sep)) throw forbidden("Invalid file path");
-  return resolved;
-}
-
-export async function saveBuffer(input: {
-  salonId: string;
-  kind: AllowedFileKind;
-  bytes: Buffer;
-  mime: string;
-  ext: string;
-  originalName: string;
-}) {
-  await ensureStorage(input.salonId);
-  const filename = `${randomUUID()}.${input.ext}`;
-  const relativePath = path.posix.join("salons", input.salonId, folderFor(input.kind), filename);
-  const absolute = safeRelativePath(relativePath);
-  await writeFile(absolute, input.bytes, { mode: 0o600, flag: "wx" });
-  return { relativePath, storedName: filename };
-}
-
-export async function saveUpload(input: {
-  salonId: string;
-  kind: "LOGO" | "DOCUMENT";
-  file: File;
-}) {
+export async function saveUpload(input: { salonId: string; kind: "LOGO" | "DOCUMENT"; file: File }) {
   if (!input.file.name || input.file.size <= 0) throw badRequest("File is required");
   const maxBytes = env.MAX_UPLOAD_MB * 1024 * 1024;
   if (input.file.size > maxBytes) throw badRequest(`File must be ${env.MAX_UPLOAD_MB} MB or smaller`);
@@ -95,22 +46,24 @@ export async function saveUpload(input: {
   if (!allowedTypes[input.kind].includes(detected.mime) || !allowedTypes[input.kind].includes(input.file.type)) {
     throw badRequest("File type is not allowed");
   }
-  const saved = await saveBuffer({
-    salonId: input.salonId,
-    kind: input.kind,
-    bytes,
-    mime: detected.mime,
-    ext: detected.ext,
-    originalName: input.file.name,
-  });
-  return { ...saved, size: bytes.length, mimeType: detected.mime, originalName: input.file.name.slice(0, 200) };
+  const storedName = `${randomUUID()}.${detected.ext}`;
+  const relativePath = path.posix.join("salons", input.salonId, folderFor(input.kind), storedName);
+  await prisma.storedBlob.create({ data: { path: relativePath, salonId: input.salonId, data: bytes } });
+  return {
+    relativePath,
+    storedName,
+    size: bytes.length,
+    mimeType: detected.mime,
+    originalName: input.file.name.slice(0, 200),
+  };
 }
 
 export async function readStoredFile(relativePath: string) {
-  return readFile(safeRelativePath(relativePath));
+  const blob = await prisma.storedBlob.findUnique({ where: { path: relativePath } });
+  if (!blob) throw notFound("File not found");
+  return Buffer.from(blob.data);
 }
 
 export async function removeStoredFile(relativePath: string) {
-  await unlink(safeRelativePath(relativePath)).catch(() => {});
+  await prisma.storedBlob.deleteMany({ where: { path: relativePath } });
 }
-

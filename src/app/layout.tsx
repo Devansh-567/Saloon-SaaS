@@ -1,13 +1,3 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 import { BRAND } from "@/lib/brand";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
@@ -35,7 +25,7 @@ const themeScript = `(function(){try{var stored=localStorage.getItem("salon-them
 export const metadata: Metadata = {
   title: {
     default: BRAND.name,
-    template: `%s Â· ${BRAND.name}`,
+    template: `%s · ${BRAND.name}`,
   },
   description: BRAND.description,
   applicationName: BRAND.name,

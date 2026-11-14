@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -128,7 +118,7 @@ export function LeavePanel({
                       <td>
                         <span className="cell-title">
                           {formatDateOnly(row.startDate, locale)}
-                          {row.endDate !== row.startDate ? ` â€“ ${formatDateOnly(row.endDate, locale)}` : ""}
+                          {row.endDate !== row.startDate ? ` – ${formatDateOnly(row.endDate, locale)}` : ""}
                         </span>
                         <span className="cell-sub">{row.days} day{row.days === 1 ? "" : "s"}</span>
                       </td>
@@ -232,7 +222,7 @@ function LeaveRequestDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="leave-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Sendingâ€¦" : "Send request"}
+            {pending ? "Sending…" : "Send request"}
           </button>
         </>
       }
@@ -268,11 +258,10 @@ function LeaveRequestDialog({
           </div>
           <div className="field span-2">
             <label htmlFor="leave-reason">Reason</label>
-            <textarea id="leave-reason" name="reason" className="textarea" required placeholder="Family function, medical restâ€¦" />
+            <textarea id="leave-reason" name="reason" className="textarea" required placeholder="Family function, medical rest…" />
           </div>
         </div>
       </form>
     </Modal>
   );
 }
-

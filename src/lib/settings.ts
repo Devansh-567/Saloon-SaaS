@@ -1,22 +1,13 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import { BRAND } from "./brand";
+import { BRAND } from "./brand";
 import { z } from "zod";
+import { DEFAULT_LOYALTY_RULES, loyaltyRulesSchema } from "./loyalty";
 
 export const salonSettingsSchema = z.object({
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).default("#8c6a52"),
   receiptHeader: z.string().max(200).default(""),
   receiptFooter: z.string().max(300).default(""),
   showLogo: z.boolean().default(true),
-  loyaltyPointsPerCurrency: z.number().min(0).max(100).default(1),
+  loyalty: loyaltyRulesSchema.default(DEFAULT_LOYALTY_RULES),
   invoiceDueDays: z.number().int().min(0).max(365).default(7),
   allowWalkIns: z.boolean().default(true),
   notifyOnInvoice: z.boolean().default(false),
@@ -27,7 +18,12 @@ export type SalonSettings = z.infer<typeof salonSettingsSchema>;
 export const DEFAULT_SALON_SETTINGS: SalonSettings = salonSettingsSchema.parse({});
 
 export function parseSalonSettings(value: unknown): SalonSettings {
-  const parsed = salonSettingsSchema.safeParse(value || {});
+  const raw = (value && typeof value === "object" ? value : {}) as Record<string, unknown>;
+  const input =
+    raw.loyalty === undefined && typeof raw.loyaltyPointsPerCurrency === "number"
+      ? { ...raw, loyalty: { earnPerCurrency: raw.loyaltyPointsPerCurrency } }
+      : raw;
+  const parsed = salonSettingsSchema.safeParse(input);
   return parsed.success ? parsed.data : DEFAULT_SALON_SETTINGS;
 }
 
@@ -41,4 +37,3 @@ export const platformSettingsSchema = z.object({
 export type PlatformSettings = z.infer<typeof platformSettingsSchema>;
 
 export const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = platformSettingsSchema.parse({});
-

@@ -1,13 +1,3 @@
-# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 COMPANY LOGO: where to put it and what to call it
 ==================================================
 Put ONE file in this folder (public/brand/) with exactly this name:

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -79,7 +69,7 @@ export function TemplatesPanel({ templates }: { templates: Template[] }) {
                   <tr key={template.id}>
                     <td><span className="cell-title">{template.key}</span></td>
                     <td><span className="badge badge-plain">{template.channel.toLowerCase()}</span></td>
-                    <td className="hide-mobile">{template.subject || "â€”"}</td>
+                    <td className="hide-mobile">{template.subject || "—"}</td>
                     <td>
                       <span className={`badge ${template.enabled ? "badge-success" : "badge-muted"}`}>
                         {template.enabled ? "Enabled" : "Disabled"}
@@ -115,7 +105,7 @@ export function TemplatesPanel({ templates }: { templates: Template[] }) {
         onClose={() => setRemoving(null)}
         onConfirm={remove}
         title="Delete template?"
-        message={removing ? `Salons using â€œ${removing.key}â€ (${removing.channel.toLowerCase()}) fall back to the built-in default.` : ""}
+        message={removing ? `Salons using “${removing.key}” (${removing.channel.toLowerCase()}) fall back to the built-in default.` : ""}
         confirmLabel="Delete template"
         danger
         pending={pending}
@@ -167,7 +157,7 @@ function TemplateDialog({ template, onClose }: { template: Template | null; onCl
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="template-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : "Save template"}
+            {pending ? "Saving…" : "Save template"}
           </button>
         </>
       }
@@ -208,4 +198,3 @@ function TemplateDialog({ template, onClose }: { template: Template | null; onCl
     </Modal>
   );
 }
-

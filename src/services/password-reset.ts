@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { env } from "@/lib/env";
@@ -16,7 +6,8 @@ import { badRequest } from "@/lib/errors";
 import { hashPassword, hashToken, randomToken } from "@/lib/crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { recordAudit } from "@/lib/audit";
-import { emailIsConfigured, sendSystemEmail } from "@/services/notifications";
+import { emailIsConfigured } from "@/lib/mail";
+import { sendSystemEmail } from "@/services/notifications";
 import type { forgotPasswordInput, resetPasswordInput } from "@/lib/validation";
 
 const RESET_MINUTES = 60;
@@ -73,4 +64,3 @@ export async function resetPassword(input: z.infer<typeof resetPasswordInput>, m
     entityId: record.userId,
   });
 }
-

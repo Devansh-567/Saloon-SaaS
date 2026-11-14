@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import crypto from "node:crypto";
 import { InvoiceStatus, type PaymentMethod } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -19,7 +9,8 @@ import { badRequest, conflict, notFound } from "@/lib/errors";
 import { logger } from "@/lib/logger";
 import { parseSalonSettings } from "@/lib/settings";
 import { asNumber, roundMoney } from "@/lib/utils";
-import { statusForAmounts } from "@/services/billing";
+import { awardLoyaltyTx, statusForAmounts } from "@/services/billing";
+import { parseLoyaltyRules } from "@/lib/loyalty";
 
 const RAZORPAY_API = "https://api.razorpay.com/v1";
 
@@ -130,7 +121,7 @@ export async function handleRazorpayEvent(event: WebhookEvent) {
 
   const invoice = await prisma.invoice.findFirst({
     where: notes.invoiceId ? { id: notes.invoiceId, salonId: notes.salonId } : { onlineLinkId: link.id },
-    include: { salon: true },
+    include: { salon: true, branch: { select: { loyalty: true } } },
   });
   if (!invoice) {
     logger.warn("razorpay_payment_unmatched", { linkId: link.id, paymentId: payment.id });
@@ -159,16 +150,16 @@ export async function handleRazorpayEvent(event: WebhookEvent) {
         receivedById: null,
       },
     });
-    const awardLoyalty = status === InvoiceStatus.PAID && !fresh.loyaltyAwardedAt && Boolean(fresh.customerId);
-    await tx.invoice.update({
-      where: { id: invoice.id },
-      data: { amountPaid: { increment: amount }, status, ...(awardLoyalty ? { loyaltyAwardedAt: new Date() } : {}) },
-    });
+    await tx.invoice.update({ where: { id: invoice.id }, data: { amountPaid: { increment: amount }, status } });
     if (fresh.customerId) {
       await tx.customer.update({ where: { id: fresh.customerId }, data: { totalSpent: { increment: amount } } });
-      if (awardLoyalty) {
-        const points = Math.floor(asNumber(fresh.total) * parseSalonSettings(invoice.salon.settings).loyaltyPointsPerCurrency);
-        if (points > 0) await tx.customer.update({ where: { id: fresh.customerId }, data: { loyaltyPoints: { increment: points } } });
+      if (status === InvoiceStatus.PAID && !fresh.loyaltyAwardedAt) {
+        await awardLoyaltyTx(tx, {
+          invoiceId: invoice.id,
+          customerId: fresh.customerId,
+          total: asNumber(fresh.total),
+          rules: parseLoyaltyRules(invoice.branch.loyalty, parseSalonSettings(invoice.salon.settings).loyalty),
+        });
       }
     }
     return { duplicate: false, status };
@@ -185,4 +176,3 @@ export async function handleRazorpayEvent(event: WebhookEvent) {
   }
   return { handled: true };
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -93,7 +83,7 @@ export function SalonsPanel({ salons, plans }: { salons: SalonRow[]; plans: Plan
                 <tr key={salon.id}>
                   <td>
                     <div className="cell-title">{salon.name}</div>
-                    <div className="cell-sub">/{salon.slug} Â· {salon.email}</div>
+                    <div className="cell-sub">/{salon.slug} · {salon.email}</div>
                   </td>
                   <td className="hide-mobile">
                     <div>{salon.owner.name}</div>
@@ -201,7 +191,7 @@ function OnboardDialog({ plans, onClose }: { plans: Plan[]; onClose: () => void 
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="onboard-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Creatingâ€¦" : "Create salon"}
+            {pending ? "Creating…" : "Create salon"}
           </button>
         </>
       }
@@ -289,12 +279,12 @@ function SubscriptionDialog({ salon, plans, onClose }: { salon: SalonRow; plans:
     <Modal
       open
       onClose={onClose}
-      title={`Subscription Â· ${salon.name}`}
+      title={`Subscription · ${salon.name}`}
       footer={
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="subscription-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : "Save subscription"}
+            {pending ? "Saving…" : "Save subscription"}
           </button>
         </>
       }
@@ -332,4 +322,3 @@ function SubscriptionDialog({ salon, plans, onClose }: { salon: SalonRow; plans:
     </Modal>
   );
 }
-

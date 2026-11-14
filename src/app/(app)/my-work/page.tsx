@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireTenantPage } from "@/lib/guards";
@@ -45,7 +35,7 @@ export default async function MyWorkPage() {
       <div className="page-head">
         <div>
           <h1>My work</h1>
-          <p className="page-subtitle">Your attendance, leave, pay, and documents â€” all in one place.</p>
+          <p className="page-subtitle">Your attendance, leave, pay, and documents — all in one place.</p>
         </div>
         <div className="page-actions">
           {canSeeAllHr(context) ? (
@@ -64,12 +54,12 @@ export default async function MyWorkPage() {
               <div style={{ fontWeight: 650, fontSize: 17 }}>{context.user.name}</div>
               <div className="hint">
                 {profile.jobTitle || context.role}
-                {profile.hiredAt ? ` Â· joined ${formatDateOnly(profile.hiredAt, context.salon.locale)}` : ""}
+                {profile.hiredAt ? ` · joined ${formatDateOnly(profile.hiredAt, context.salon.locale)}` : ""}
               </div>
             </div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div className="field-label">Today Â· {formatDateOnly(data.today, context.salon.locale)}</div>
+            <div className="field-label">Today · {formatDateOnly(data.today, context.salon.locale)}</div>
             <div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "flex-end", marginTop: 4 }}>
               <span className={`badge ${attendanceTone(todayStatus)}`}>
                 {todayStatus ? ATTENDANCE_STATUS_LABELS[todayStatus] : "Not marked yet"}
@@ -86,7 +76,7 @@ export default async function MyWorkPage() {
         <div className="stat-card">
           <div className="stat-top"><span>Present this month</span><Icon name="check" /></div>
           <div className="stat-value">{data.attendanceSummary.present}</div>
-          <div className="stat-foot">{data.attendanceSummary.halfDay} half day Â· {data.attendanceSummary.marked} marked</div>
+          <div className="stat-foot">{data.attendanceSummary.halfDay} half day · {data.attendanceSummary.marked} marked</div>
         </div>
         <div className="stat-card">
           <div className="stat-top"><span>Leave waiting</span><Icon name="calendar" /></div>
@@ -146,7 +136,7 @@ export default async function MyWorkPage() {
                     {data.salaries.map((salary) => (
                       <tr key={salary.id}>
                         <td>
-                          <span className="cell-title">{formatDateOnly(salary.periodStart, context.salon.locale)} â€“ {formatDateOnly(salary.periodEnd, context.salon.locale)}</span>
+                          <span className="cell-title">{formatDateOnly(salary.periodStart, context.salon.locale)} – {formatDateOnly(salary.periodEnd, context.salon.locale)}</span>
                           {salary.notes ? <div className="cell-sub">{salary.notes}</div> : null}
                         </td>
                         <td className="num"><strong>{formatMoney(salary.netAmount, context.salon.currency, context.salon.locale)}</strong></td>
@@ -189,9 +179,9 @@ export default async function MyWorkPage() {
                             {ATTENDANCE_STATUS_LABELS[record.status as keyof typeof ATTENDANCE_STATUS_LABELS] || record.status}
                           </span>
                         </td>
-                        <td className="hide-mobile">{record.checkIn ? formatTime(record.checkIn, context.salon.timezone, context.salon.locale) : "â€”"}</td>
-                        <td className="hide-mobile">{record.checkOut ? formatTime(record.checkOut, context.salon.timezone, context.salon.locale) : "â€”"}</td>
-                        <td className="hide-mobile">{record.workedMinutes ? formatMinutes(record.workedMinutes) : "â€”"}</td>
+                        <td className="hide-mobile">{record.checkIn ? formatTime(record.checkIn, context.salon.timezone, context.salon.locale) : "—"}</td>
+                        <td className="hide-mobile">{record.checkOut ? formatTime(record.checkOut, context.salon.timezone, context.salon.locale) : "—"}</td>
+                        <td className="hide-mobile">{record.workedMinutes ? formatMinutes(record.workedMinutes) : "—"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -231,7 +221,7 @@ export default async function MyWorkPage() {
               </div>
               <div>
                 <div className="field-label">Emergency contact</div>
-                <div>{profile.emergencyContactName || "Not saved"}{profile.emergencyContactPhone ? ` Â· ${profile.emergencyContactPhone}` : ""}</div>
+                <div>{profile.emergencyContactName || "Not saved"}{profile.emergencyContactPhone ? ` · ${profile.emergencyContactPhone}` : ""}</div>
               </div>
               <p className="hint" style={{ margin: 0 }}>Ask your owner or manager to update these details.</p>
             </div>
@@ -251,7 +241,7 @@ export default async function MyWorkPage() {
                 <div className="stack" style={{ gap: 8, marginTop: 16 }}>
                   {data.performance.topServices.slice(0, 4).map((service) => (
                     <div key={service.name} className="row-between" style={{ fontSize: 12.5 }}>
-                      <span>{service.name} <span className="hint">Ã—{service.count}</span></span>
+                      <span>{service.name} <span className="hint">×{service.count}</span></span>
                       <span>{formatMoney(service.revenue, context.salon.currency, context.salon.locale)}</span>
                     </div>
                   ))}
@@ -298,4 +288,3 @@ export default async function MyWorkPage() {
     </div>
   );
 }
-

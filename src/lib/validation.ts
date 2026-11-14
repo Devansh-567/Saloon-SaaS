@@ -1,14 +1,5 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import { z } from "zod";
+import { loyaltyRulesSchema } from "./loyalty";
+import { z } from "zod";
 import { emailSchema, passwordSchema, phoneSchema } from "./security";
 import { PERMISSIONS } from "./permissions";
 import { salonSettingsSchema } from "./settings";
@@ -22,7 +13,7 @@ export const optionalText = z
   .string()
   .trim()
   .max(2000)
-  .optional()
+  .nullish()
   .transform((v) => (v ? v : undefined));
 
 export const dateOnlyInput = z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a valid date");
@@ -67,15 +58,21 @@ export const followUpUpdate = z
   })
   .refine((data) => Object.values(data).some((v) => v !== undefined), "No changes supplied");
 
-export const appointmentInput = z.object({
-  customerId: z.string().cuid(),
-  branchId: z.string().cuid(),
-  serviceId: z.string().cuid(),
-  staffMembershipId: z.string().cuid(),
-  startAt: z.coerce.date(),
-  notes: optionalText,
-  walkIn: z.boolean().default(false),
-});
+export const appointmentInput = z
+  .object({
+    customerId: nullableId,
+    newCustomerName: z.string().trim().max(120).optional().nullable(),
+    branchId: z.string().cuid(),
+    serviceId: z.string().cuid(),
+    staffMembershipId: z.string().cuid(),
+    startAt: z.coerce.date(),
+    notes: optionalText,
+    walkIn: z.boolean().default(false),
+  })
+  .refine((data) => Boolean(data.customerId) || Boolean(data.newCustomerName), {
+    message: "Choose a customer or type the customer's name",
+    path: ["customerId"],
+  });
 
 export const appointmentUpdate = z
   .object({
@@ -138,6 +135,8 @@ export const invoiceInput = z.object({
   branchId: z.string().cuid(),
   appointmentId: nullableId,
   discount: z.number().min(0).default(0),
+  discountType: z.enum(["AMOUNT", "PERCENT"]).default("AMOUNT"),
+  redeemPoints: z.number().int().min(0).max(10000000).default(0),
   notes: optionalText,
   payments: z.array(checkoutPaymentInput).max(5).default([]),
   idempotencyKey: z.string().trim().min(8).max(80).optional().nullable(),
@@ -361,7 +360,10 @@ export const branchInput = z.object({
   address: z.string().trim().max(500).optional().nullable(),
 });
 
-export const branchUpdateInput = branchInput.partial().extend({ active: z.boolean().optional() });
+export const branchUpdateInput = branchInput.partial().extend({
+  active: z.boolean().optional(),
+  loyalty: loyaltyRulesSchema.nullable().optional(),
+});
 
 export const registerInput = z.object({
   salonName: z.string().trim().min(2).max(120),
@@ -446,4 +448,3 @@ export const resetPasswordInput = z.object({
   token: z.string().trim().min(20).max(200),
   password: passwordSchema,
 });
-

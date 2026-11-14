@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getPlatformDashboard, getPlatformSettings } from "@/services/platform";
 import { formatDate, formatMoney } from "@/lib/utils";
@@ -27,7 +17,7 @@ export default async function PlatformOverviewPage() {
       <div className="page-head">
         <div>
           <h1>Overview</h1>
-          <p className="page-subtitle">{settings.platformName} Â· every salon on the platform at a glance.</p>
+          <p className="page-subtitle">{settings.platformName} · every salon on the platform at a glance.</p>
         </div>
       </div>
 
@@ -46,7 +36,7 @@ export default async function PlatformOverviewPage() {
           </div>
           <div className="stat-value">{data.salonCount}</div>
           <div className="stat-foot">
-            {data.activeSalons} active Â· {data.suspendedSalons} suspended
+            {data.activeSalons} active · {data.suspendedSalons} suspended
           </div>
         </div>
         <div className="stat-card">
@@ -71,7 +61,7 @@ export default async function PlatformOverviewPage() {
             <Icon name="chart" />
           </div>
           <div className="stat-value">{number.format(data.gmv)}</div>
-          <div className="stat-foot">Across all salons Â· mixed currencies</div>
+          <div className="stat-foot">Across all salons · mixed currencies</div>
         </div>
       </div>
 
@@ -99,7 +89,7 @@ export default async function PlatformOverviewPage() {
           </div>
           <div className="stat-value">{data.planCounts.length}</div>
           <div className="stat-foot">
-            {data.planCounts.map((plan) => `${plan.name}: ${plan.count}`).join(" Â· ") || "No plans assigned"}
+            {data.planCounts.map((plan) => `${plan.name}: ${plan.count}`).join(" · ") || "No plans assigned"}
           </div>
         </div>
       </div>
@@ -175,4 +165,3 @@ export default async function PlatformOverviewPage() {
     </div>
   );
 }
-

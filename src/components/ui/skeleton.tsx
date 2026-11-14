@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- export function PageSkeleton({ stats = 4, rows = 6 }: { stats?: number; rows?: number }) {
+export function PageSkeleton({ stats = 4, rows = 6 }: { stats?: number; rows?: number }) {
   return (
     <div aria-busy="true" aria-label="Loading content">
       <div className="page-head">
@@ -34,4 +24,3 @@
     </div>
   );
 }
-

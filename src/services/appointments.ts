@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import { AppointmentStatus, Prisma, type Appointment } from "@prisma/client";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -130,7 +120,11 @@ async function validateBookingRefs(
 }
 
 export async function createAppointment(context: TenantContext, input: AppointmentInput) {
-  const { branch, service, staff } = await validateBookingRefs(context, input, input.staffMembershipId);
+  const { branch, service, staff } = await validateBookingRefs(
+    context,
+    { ...input, customerId: input.customerId ?? undefined },
+    input.staffMembershipId,
+  );
   const endAt = new Date(input.startAt.getTime() + service.durationMin * 60000);
   if (endAt <= input.startAt) throw badRequest("Invalid appointment time");
   const overlap = await prisma.appointment.findFirst({
@@ -145,20 +139,30 @@ export async function createAppointment(context: TenantContext, input: Appointme
   if (overlap) throw conflict("This staff member already has an overlapping appointment");
   let appointment: AppointmentWithRelations;
   try {
-    appointment = await prisma.appointment.create({
-      data: {
-        salonId: context.salon.id,
-        branchId: branch.id,
-        customerId: input.customerId,
-        staffMembershipId: staff.id,
-        serviceId: service.id,
-        startAt: input.startAt,
-        endAt,
-        notes: input.notes,
-        walkIn: input.walkIn,
-        createdById: context.user.id,
-      },
-      include: includeAppointment,
+    appointment = await prisma.$transaction(async (tx) => {
+      let customerId = input.customerId;
+      if (!customerId) {
+        const [firstName, ...rest] = (input.newCustomerName as string).split(/\s+/);
+        const created = await tx.customer.create({
+          data: { salonId: context.salon.id, firstName, lastName: rest.join(" "), phone: "", source: "Booked without details" },
+        });
+        customerId = created.id;
+      }
+      return tx.appointment.create({
+        data: {
+          salonId: context.salon.id,
+          branchId: branch.id,
+          customerId,
+          staffMembershipId: staff.id,
+          serviceId: service.id,
+          startAt: input.startAt,
+          endAt,
+          notes: input.notes,
+          walkIn: input.walkIn,
+          createdById: context.user.id,
+        },
+        include: includeAppointment,
+      });
     });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.message.includes("appointment_overlap")) {
@@ -184,6 +188,10 @@ export async function updateAppointment(context: TenantContext, id: string, inpu
   });
   if (!existing) throw notFound("Appointment not found");
   await assertStaffAccess(context, existing);
+  const finished: AppointmentStatus[] = ["COMPLETED", "CANCELLED", "NO_SHOW"];
+  if (finished.includes(existing.status) && (input.startAt || input.staffMembershipId || input.serviceId)) {
+    throw badRequest("A finished appointment cannot be changed or rescheduled");
+  }
   if (input.status && input.status !== existing.status) {
     const allowed: Record<AppointmentStatus, AppointmentStatus[]> = {
       SCHEDULED: ["CONFIRMED", "CHECKED_IN", "CANCELLED", "NO_SHOW"],
@@ -342,4 +350,3 @@ export async function todayAppointments(context: TenantContext, from: Date, to: 
   });
   return items.map(appointmentDto);
 }
-

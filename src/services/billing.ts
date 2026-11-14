@@ -1,14 +1,5 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import { parseLoyaltyRules, pointsEarned, redemptionProblem, redemptionValue, type LoyaltyRules } from "@/lib/loyalty";
+import "server-only";
 import { InvoiceStatus, Prisma } from "@prisma/client";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -53,6 +44,7 @@ function invoiceDto(invoice: InvoiceFull) {
     branch: invoice.branch,
     subtotal: asNumber(invoice.subtotal),
     discount: asNumber(invoice.discount),
+    pointsRedeemed: invoice.pointsRedeemed,
     taxTotal: asNumber(invoice.taxTotal),
     total: asNumber(invoice.total),
     amountPaid: asNumber(invoice.amountPaid),
@@ -159,6 +151,18 @@ export async function getInvoice(context: TenantContext, id: string) {
   return invoiceDto(invoice);
 }
 
+export async function awardLoyaltyTx(
+  tx: Prisma.TransactionClient,
+  input: { invoiceId: string; customerId: string; total: number; rules: LoyaltyRules },
+) {
+  const points = pointsEarned(input.total, input.rules);
+  await tx.invoice.update({ where: { id: input.invoiceId }, data: { loyaltyAwardedAt: new Date(), pointsEarned: points } });
+  if (points > 0) {
+    await tx.customer.update({ where: { id: input.customerId }, data: { loyaltyPoints: { increment: points } } });
+  }
+  return points;
+}
+
 export async function createInvoice(context: TenantContext, input: InvoiceInput) {
   if (input.idempotencyKey) {
     const existing = await prisma.invoice.findFirst({
@@ -245,12 +249,25 @@ export async function createInvoice(context: TenantContext, input: InvoiceInput)
       staffMembershipId: item.staffMembershipId,
     };
   });
-  const totals = calculateInvoice(lineInputs, input.discount);
+  const settings = parseSalonSettings(context.salon.settings);
+  const grossSubtotal = roundMoney(lineInputs.reduce((sum, line) => sum + roundMoney(line.quantity * line.unitPrice), 0));
+  if (input.discountType === "PERCENT" && input.discount > 100) throw badRequest("A percent discount cannot be more than 100");
+  const manualDiscount =
+    input.discountType === "PERCENT" ? roundMoney((grossSubtotal * input.discount) / 100) : roundMoney(input.discount);
+  const rules = parseLoyaltyRules(branch.loyalty, settings.loyalty);
+  let pointsValue = 0;
+  if (input.redeemPoints > 0) {
+    if (!customer) throw badRequest("Choose a customer to use reward points");
+    const problem = redemptionProblem(input.redeemPoints, customer.loyaltyPoints, grossSubtotal, rules);
+    if (problem) throw badRequest(problem);
+    pointsValue = redemptionValue(input.redeemPoints, rules);
+  }
+  if (manualDiscount + pointsValue > grossSubtotal + 0.001) throw badRequest("The discount is more than the bill total");
+  const totals = calculateInvoice(lineInputs, roundMoney(manualDiscount + pointsValue));
   const checkoutPaid = roundMoney(input.payments.reduce((sum, payment) => sum + roundMoney(payment.amount), 0));
   if (checkoutPaid > totals.total + 0.001) {
     throw badRequest(`Payments (${checkoutPaid.toFixed(2)}) are more than the bill total (${totals.total.toFixed(2)})`);
   }
-  const settings = parseSalonSettings(context.salon.settings);
   const counts = new Map<string, number>();
   for (const line of lineInputs) {
     if (line.productId) counts.set(line.productId, (counts.get(line.productId) || 0) + line.quantity);
@@ -271,6 +288,13 @@ export async function createInvoice(context: TenantContext, input: InvoiceInput)
     const sequence = await tx.invoice.count({ where: { salonId: context.salon.id } });
     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const number = `INV-${datePart}-${String(sequence + 1).padStart(4, "0")}`;
+    if (input.redeemPoints > 0 && customer) {
+      const spent = await tx.customer.updateMany({
+        where: { id: customer.id, loyaltyPoints: { gte: input.redeemPoints } },
+        data: { loyaltyPoints: { decrement: input.redeemPoints } },
+      });
+      if (spent.count === 0) throw conflict("The customer does not have enough reward points");
+    }
     for (const [productId, quantity] of counts) {
       const changed = await tx.product.updateMany({
         where: { id: productId, salonId: context.salon.id, stockQty: { gte: quantity } },
@@ -285,6 +309,7 @@ export async function createInvoice(context: TenantContext, input: InvoiceInput)
         customerId: customer?.id ?? null,
         appointmentId: input.appointmentId,
         idempotencyKey: input.idempotencyKey || null,
+        pointsRedeemed: input.redeemPoints,
         number,
         status: InvoiceStatus.ISSUED,
         subtotal: totals.subtotal,
@@ -343,20 +368,11 @@ export async function createInvoice(context: TenantContext, input: InvoiceInput)
         });
       }
       const status = statusForAmounts(totals.total, checkoutPaid, 0, InvoiceStatus.ISSUED);
-      const awardLoyalty = status === InvoiceStatus.PAID && Boolean(customer);
-      await tx.invoice.update({
-        where: { id: created.id },
-        data: {
-          amountPaid: checkoutPaid,
-          status,
-          ...(awardLoyalty ? { loyaltyAwardedAt: new Date() } : {}),
-        },
-      });
+      await tx.invoice.update({ where: { id: created.id }, data: { amountPaid: checkoutPaid, status } });
       if (customer) {
         await tx.customer.update({ where: { id: customer.id }, data: { totalSpent: { increment: checkoutPaid } } });
-        const points = awardLoyalty ? Math.floor(totals.total * settings.loyaltyPointsPerCurrency) : 0;
-        if (points > 0) {
-          await tx.customer.update({ where: { id: customer.id }, data: { loyaltyPoints: { increment: points } } });
+        if (status === InvoiceStatus.PAID) {
+          await awardLoyaltyTx(tx, { invoiceId: created.id, customerId: customer.id, total: totals.total, rules });
         }
       }
     }
@@ -379,7 +395,7 @@ export async function addPayment(context: TenantContext, invoiceId: string, inpu
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`invoice:${invoiceId}`}))`;
     const invoice = await tx.invoice.findFirst({
       where: { id: invoiceId, salonId: context.salon.id },
-      include: { customer: true },
+      include: { customer: true, branch: { select: { loyalty: true } } },
     });
     if (!invoice) throw notFound("Invoice not found");
     if (invoice.status === InvoiceStatus.VOID) throw conflict("Void invoices cannot receive payments");
@@ -406,7 +422,6 @@ export async function addPayment(context: TenantContext, invoiceId: string, inpu
       data: {
         amountPaid: { increment: amount },
         status: newStatus,
-        ...(newStatus === InvoiceStatus.PAID && !invoice.loyaltyAwardedAt ? { loyaltyAwardedAt: new Date() } : {}),
       },
     });
     if (invoice.customerId) {
@@ -415,14 +430,12 @@ export async function addPayment(context: TenantContext, invoiceId: string, inpu
         data: { totalSpent: { increment: amount } },
       });
       if (newStatus === InvoiceStatus.PAID && !invoice.loyaltyAwardedAt) {
-        const settings = parseSalonSettings(context.salon.settings);
-        const points = Math.floor(asNumber(invoice.total) * settings.loyaltyPointsPerCurrency);
-        if (points > 0) {
-          await tx.customer.update({
-            where: { id: invoice.customerId },
-            data: { loyaltyPoints: { increment: points } },
-          });
-        }
+        await awardLoyaltyTx(tx, {
+          invoiceId: invoice.id,
+          customerId: invoice.customerId,
+          total: asNumber(invoice.total),
+          rules: parseLoyaltyRules(invoice.branch.loyalty, parseSalonSettings(context.salon.settings).loyalty),
+        });
       }
     }
     return { payment: paid, invoiceId: invoice.id, status: newStatus };
@@ -493,7 +506,8 @@ export async function refundInvoice(context: TenantContext, invoiceId: string, i
       data: {
         amountRefunded: { increment: amount },
         status: newStatus,
-        ...(newStatus !== InvoiceStatus.PAID && invoice.loyaltyAwardedAt ? { loyaltyAwardedAt: null } : {}),
+        ...(newStatus !== InvoiceStatus.PAID && invoice.loyaltyAwardedAt ? { loyaltyAwardedAt: null, pointsEarned: 0 } : {}),
+        ...(newStatus === InvoiceStatus.REFUNDED && invoice.pointsRedeemed > 0 ? { pointsRedeemed: 0 } : {}),
       },
     });
     if (invoice.customerId) {
@@ -501,13 +515,15 @@ export async function refundInvoice(context: TenantContext, invoiceId: string, i
         where: { id: invoice.customerId },
         data: { totalSpent: { decrement: amount } },
       });
-      if (newStatus !== InvoiceStatus.PAID && invoice.loyaltyAwardedAt && invoice.customer) {
-        const settings = parseSalonSettings(context.salon.settings);
-        const points = Math.floor(asNumber(invoice.total) * settings.loyaltyPointsPerCurrency);
-        await tx.customer.update({
-          where: { id: invoice.customerId },
-          data: { loyaltyPoints: Math.max(0, invoice.customer.loyaltyPoints - points) },
-        });
+      if (invoice.customer) {
+        const revoke = newStatus !== InvoiceStatus.PAID && invoice.loyaltyAwardedAt ? invoice.pointsEarned : 0;
+        const restore = newStatus === InvoiceStatus.REFUNDED ? invoice.pointsRedeemed : 0;
+        if (revoke || restore) {
+          await tx.customer.update({
+            where: { id: invoice.customerId },
+            data: { loyaltyPoints: Math.max(0, invoice.customer.loyaltyPoints - revoke + restore) },
+          });
+        }
       }
     }
     return { status: newStatus, amount };
@@ -552,9 +568,15 @@ export async function voidInvoice(context: TenantContext, invoiceId: string) {
         });
       }
     }
+    if (current.pointsRedeemed > 0 && current.customerId) {
+      await tx.customer.update({
+        where: { id: current.customerId },
+        data: { loyaltyPoints: { increment: current.pointsRedeemed } },
+      });
+    }
     return tx.invoice.update({
       where: { id: invoiceId },
-      data: { status: InvoiceStatus.VOID },
+      data: { status: InvoiceStatus.VOID, pointsRedeemed: 0 },
       include: invoiceInclude,
     });
   });
@@ -567,4 +589,3 @@ export async function voidInvoice(context: TenantContext, invoiceId: string) {
   });
   return invoiceDto(invoice);
 }
-

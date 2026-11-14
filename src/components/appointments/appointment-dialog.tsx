@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -78,7 +68,8 @@ export function AppointmentDialog({
     try {
       const body = {
         branchId: form.get("branchId"),
-        customerId: form.get("customerId"),
+        customerId: form.get("customerId") || null,
+        newCustomerName: form.get("newCustomerName") || undefined,
         serviceId: form.get("serviceId"),
         staffMembershipId: form.get("staffMembershipId"),
         startAt: zonedDateTimeToUtc(String(form.get("startAt")), timezone).toISOString(),
@@ -120,7 +111,7 @@ export function AppointmentDialog({
               Cancel
             </button>
             <button type="submit" form="appointment-form" className="btn btn-primary" disabled={pending}>
-              {pending ? "Savingâ€¦" : editing ? "Save changes" : "Book appointment"}
+              {pending ? "Saving…" : editing ? "Save changes" : "Book appointment"}
             </button>
           </>
         }
@@ -132,11 +123,11 @@ export function AppointmentDialog({
               {editing ? (
                 <div className="field">
                   <label>Customer</label>
-                  <input className="input" value={`${appointment!.customer.name} Â· ${appointment!.customer.phone}`} disabled />
+                  <input className="input" value={[appointment!.customer.name, appointment!.customer.phone].filter(Boolean).join(" · ")} disabled />
                   <input type="hidden" name="customerId" value={appointment!.customer.id} />
                 </div>
               ) : (
-                <CustomerPicker initial={initialCustomer} />
+                <CustomerPicker initial={initialCustomer} allowNew />
               )}
             </div>
             <div className="field">
@@ -155,7 +146,7 @@ export function AppointmentDialog({
                 <option value="">Choose a service</option>
                 {activeServices.map((service) => (
                   <option key={service.id} value={service.id}>
-                    {service.name} Â· {service.durationMin} min
+                    {service.name} · {service.durationMin} min
                   </option>
                 ))}
               </select>
@@ -192,4 +183,3 @@ export function AppointmentDialog({
     </>
   );
 }
-

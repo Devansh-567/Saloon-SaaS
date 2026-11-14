@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -77,7 +67,7 @@ export function AppointmentActions({ id, status }: { id: string; status: string 
             onClick={() => (action.tone === "danger" || action.status === "COMPLETED" ? setConfirm(action) : changeStatus(action.status))}
             disabled={Boolean(pending)}
           >
-            {pending === action.status ? "â€¦" : action.label}
+            {pending === action.status ? "…" : action.label}
           </button>
         ))}
       </div>
@@ -98,4 +88,3 @@ export function AppointmentActions({ id, status }: { id: string; status: string 
     </>
   );
 }
-

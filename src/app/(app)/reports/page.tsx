@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { getReports } from "@/services/analytics";
@@ -83,7 +73,7 @@ export default async function ReportsPage({
         <div>
           <h1>Reports</h1>
           <p className="page-subtitle">
-            {fromDate} to {toDate} Â· {context.salon.timezone.replaceAll("_", " ")}
+            {fromDate} to {toDate} · {context.salon.timezone.replaceAll("_", " ")}
           </p>
         </div>
       </div>
@@ -252,7 +242,7 @@ export default async function ReportsPage({
                 {report.paymentBreakdown.map((entry) => (
                   <li key={`${entry.kind}-${entry.method}`}>
                     <span>
-                      {paymentMethodLabel(entry.method)} Â· {entry.kind === "REFUND" ? "money back" : "payment"}
+                      {paymentMethodLabel(entry.method)} · {entry.kind === "REFUND" ? "money back" : "payment"}
                     </span>
                     <strong>{formatMoney(entry.amount, currency, locale)}</strong>
                   </li>
@@ -377,4 +367,3 @@ function Stat({ label, value, hint }: { label: string; value: string; hint: stri
     </div>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -126,7 +116,7 @@ export function AdvancePanel({
                         </span>
                         {row.notes ? <div className="cell-sub">{row.notes}</div> : null}
                       </td>
-                      <td className="hide-mobile" style={{ maxWidth: 220 }}>{row.reason || "â€”"}</td>
+                      <td className="hide-mobile" style={{ maxWidth: 220 }}>{row.reason || "—"}</td>
                       <td>
                         <div className="actions">
                           {row.status === "PENDING" && canDecide && !isOwn ? (
@@ -219,7 +209,7 @@ function AdvanceRequestDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="advance-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Sendingâ€¦" : "Send request"}
+            {pending ? "Sending…" : "Send request"}
           </button>
         </>
       }
@@ -243,11 +233,10 @@ function AdvanceRequestDialog({
           </div>
           <div className="field span-2">
             <label htmlFor="advance-reason">Reason</label>
-            <textarea id="advance-reason" name="reason" className="textarea" rows={2} placeholder="Medical bill, school feesâ€¦" />
+            <textarea id="advance-reason" name="reason" className="textarea" rows={2} placeholder="Medical bill, school fees…" />
           </div>
         </div>
       </form>
     </Modal>
   );
 }
-

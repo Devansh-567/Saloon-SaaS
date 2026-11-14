@@ -1,13 +1,3 @@
-# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 import { describe, expect, it } from "vitest";
 import {
   PERMISSIONS,
@@ -17,8 +7,11 @@ import {
 } from "@/lib/permissions";
 
 describe("effectivePermissions", () => {
-  it("gives owners every permission and ignores revokes", () => {
-    expect(effectivePermissions("OWNER", { revoke: ["settings.write"] })).toEqual([...PERMISSIONS]);
+  it("gives owners every permission except staff self-service, and ignores revokes", () => {
+    const permissions = effectivePermissions("OWNER", { revoke: ["settings.write"] });
+    expect(permissions).toEqual(PERMISSIONS.filter((permission) => permission !== "hr.self"));
+    expect(permissions).toContain("settings.write");
+    expect(permissions).not.toContain("hr.self");
   });
 
   it("gives managers billing and team access but not settings or audit", () => {

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -119,11 +109,11 @@ export function ProductsTable({
                   <div className="cell-title">{product.name}</div>
                   <div className="cell-sub">
                     {product.taxRate ? `${product.taxRate.name} (${product.taxRate.rate}%)` : "No tax"}
-                    {product.description ? ` Â· ${product.description}` : ""}
+                    {product.description ? ` · ${product.description}` : ""}
                   </div>
                 </td>
                 <td className="hide-mobile">{product.sku}</td>
-                <td className="hide-mobile">{product.supplier || "â€”"}</td>
+                <td className="hide-mobile">{product.supplier || "—"}</td>
                 <td className="num">{formatMoney(product.price, currency, locale)}</td>
                 <td className="num hide-mobile">{formatMoney(product.cost, currency, locale)}</td>
                 <td className="num">
@@ -169,8 +159,8 @@ export function ProductsTable({
         message={
           deleting
             ? deleting.active
-              ? `â€œ${deleting.name}â€ will be removed. If it appears on past bills or stock records, it is archived instead so history stays correct.`
-              : `â€œ${deleting.name}â€ is already inactive. Delete it permanently if it has no history.`
+              ? `“${deleting.name}” will be removed. If it appears on past bills or stock records, it is archived instead so history stays correct.`
+              : `“${deleting.name}” is already inactive. Delete it permanently if it has no history.`
             : ""
         }
         confirmLabel="Delete"
@@ -250,7 +240,7 @@ export function ProductDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={close} disabled={pending}>Cancel</button>
           <button type="submit" form="product-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : product ? "Save changes" : "Add product"}
+            {pending ? "Saving…" : product ? "Save changes" : "Add product"}
           </button>
         </>
       }
@@ -363,13 +353,13 @@ function StockDialog({ product, onClose }: { product: ProductRow; onClose: () =>
     <Modal
       open
       onClose={onClose}
-      title={`Correct stock count Â· ${product.name}`}
+      title={`Correct stock count · ${product.name}`}
       description={`Current stock: ${product.stockQty} ${product.unit}`}
       footer={
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="stock-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : "Apply adjustment"}
+            {pending ? "Saving…" : "Apply adjustment"}
           </button>
         </>
       }
@@ -391,11 +381,10 @@ function StockDialog({ product, onClose }: { product: ProductRow; onClose: () =>
           </div>
           <div className="field span-2">
             <label htmlFor="stock-notes">Reason</label>
-            <input id="stock-notes" name="notes" className="input" placeholder="Stock count correction, damaged, back-of-house useâ€¦" required minLength={2} />
+            <input id="stock-notes" name="notes" className="input" placeholder="Stock count correction, damaged, back-of-house use…" required minLength={2} />
           </div>
         </div>
       </form>
     </Modal>
   );
 }
-

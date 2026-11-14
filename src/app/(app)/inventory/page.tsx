@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { hasPermission } from "@/lib/auth";
@@ -216,10 +206,10 @@ async function PurchasesTab({
                 {history.items.map((purchase) => (
                   <tr key={purchase.id}>
                     <td>{formatDate(purchase.purchasedAt, context.salon.timezone, context.salon.locale)}</td>
-                    <td>{purchase.supplier || "â€”"}</td>
-                    <td>{purchase.reference || "â€”"}</td>
+                    <td>{purchase.supplier || "—"}</td>
+                    <td>{purchase.reference || "—"}</td>
                     <td className="hide-mobile">
-                      {purchase.items.map((item) => `${item.product} Ã—${item.quantity} @ ${formatMoney(item.unitCost, currency, locale)}`).join(", ")}
+                      {purchase.items.map((item) => `${item.product} ×${item.quantity} @ ${formatMoney(item.unitCost, currency, locale)}`).join(", ")}
                     </td>
                     <td className="num">{formatMoney(purchase.total, currency, locale)}</td>
                     {canWrite ? (
@@ -248,4 +238,3 @@ async function PurchasesTab({
     </section>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import { Prisma } from "@prisma/client";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -322,16 +312,17 @@ export async function listPurchaseHistory(context: TenantContext, page = 1, page
 }
 
 export async function createPurchase(context: TenantContext, input: PurchaseInput) {
+  let supplierName: string | null = null;
   if (input.supplierId) {
     const supplier = await prisma.supplier.findFirst({ where: { id: input.supplierId, salonId: context.salon.id } });
     if (!supplier) throw badRequest("Supplier not found");
+    supplierName = supplier.name;
   }
   const productIds = [...new Set(input.items.map((i) => i.productId))];
   const products = await prisma.product.findMany({
     where: { id: { in: productIds }, salonId: context.salon.id },
   });
   if (products.length !== productIds.length) throw badRequest("One or more products were not found");
-  const productMap = new Map(products.map((p) => [p.id, p]));
   const total = roundMoney(input.items.reduce((sum, item) => sum + item.quantity * item.unitCost, 0));
   const purchase = await prisma.$transaction(async (tx) => {
     const created = await tx.purchase.create({
@@ -354,7 +345,6 @@ export async function createPurchase(context: TenantContext, input: PurchaseInpu
       },
     });
     for (const item of input.items) {
-      const product = productMap.get(item.productId)!;
       const updated = await tx.product.update({
         where: { id: item.productId },
         data: { stockQty: { increment: item.quantity }, cost: item.unitCost },
@@ -371,7 +361,20 @@ export async function createPurchase(context: TenantContext, input: PurchaseInpu
           createdById: context.user.id,
         },
       });
-      void product;
+    }
+    if (total > 0) {
+      await tx.expense.create({
+        data: {
+          salonId: context.salon.id,
+          category: "Stock purchase",
+          vendor: supplierName,
+          amount: total,
+          spentAt: input.purchasedAt,
+          notes: input.reference ? `Stock purchase, bill ${input.reference}` : "Stock purchase",
+          createdById: context.user.id,
+          purchaseId: created.id,
+        },
+      });
     }
     return created;
   });
@@ -417,6 +420,7 @@ export async function deletePurchase(context: TenantContext, id: string) {
         },
       });
     }
+    await tx.expense.updateMany({ where: { purchaseId: id }, data: { status: "VOID" } });
     await tx.purchase.delete({ where: { id } });
   });
   await recordAudit({
@@ -429,4 +433,3 @@ export async function deletePurchase(context: TenantContext, id: string) {
   });
   return { id };
 }
-

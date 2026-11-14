@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { hasPermission } from "@/lib/auth";
@@ -83,7 +73,7 @@ export default async function ExpensesPage({
           </div>
           <div className="stat-value">{formatMoney(asNumber(rangeTotals._sum.amount), context.salon.currency, context.salon.locale)}</div>
           <div className="stat-foot">
-            {formatDay(from, context.salon.timezone, context.salon.locale)} â€“ {formatDay(to, context.salon.timezone, context.salon.locale)}
+            {formatDay(from, context.salon.timezone, context.salon.locale)} – {formatDay(to, context.salon.timezone, context.salon.locale)}
           </div>
         </div>
         <div className="stat-card">
@@ -139,21 +129,21 @@ export default async function ExpensesPage({
                         <div className="cell-title">{expense.category}</div>
                         {expense.notes ? <div className="cell-sub">{expense.notes}</div> : null}
                       </td>
-                      <td className="hide-mobile">{expense.vendor || "â€”"}</td>
+                      <td className="hide-mobile">{expense.vendor || "—"}</td>
                       <td className="hide-mobile">{expense.branch || "All"}</td>
                       <td className="hide-mobile">
                         {expense.receipt ? (
                           <a className="link" href={`/api/files/${expense.receipt.id}`} target="_blank" rel="noreferrer">
-                            {expense.receipt.originalName.length > 22 ? `${expense.receipt.originalName.slice(0, 22)}â€¦` : expense.receipt.originalName}
+                            {expense.receipt.originalName.length > 22 ? `${expense.receipt.originalName.slice(0, 22)}…` : expense.receipt.originalName}
                           </a>
                         ) : (
-                          "â€”"
+                          "—"
                         )}
                       </td>
                       <td className="num">{formatMoney(expense.amount, context.salon.currency, context.salon.locale)}</td>
                       {canWrite ? (
                         <td>
-                          <ExpenseActions expenseId={expense.id} label={`${expense.category} Â· ${formatMoney(expense.amount, context.salon.currency, context.salon.locale)}`} />
+                          <ExpenseActions expenseId={expense.id} label={`${expense.category} · ${formatMoney(expense.amount, context.salon.currency, context.salon.locale)}`} />
                         </td>
                       ) : null}
                     </tr>
@@ -180,4 +170,3 @@ export default async function ExpensesPage({
     </div>
   );
 }
-

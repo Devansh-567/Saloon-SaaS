@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- function partsInZone(date: Date, timeZone: string) {
+function partsInZone(date: Date, timeZone: string) {
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -84,4 +74,3 @@ export function zonedTimeInput(date: Date, timeZone: string) {
 export function zonedLocalInput(date: Date, timeZone: string) {
   return `${zonedDateInput(date, timeZone)}T${zonedTimeInput(date, timeZone)}`;
 }
-

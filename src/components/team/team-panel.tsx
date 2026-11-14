@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -123,7 +113,7 @@ export function TeamPanel({
                     ) : null}
                   </td>
                   <td className="hide-mobile">{member.branch || "All branches"}</td>
-                  <td className="hide-mobile num">{member.profile ? `${member.profile.commissionRate}%` : "â€”"}</td>
+                  <td className="hide-mobile num">{member.profile ? `${member.profile.commissionRate}%` : "—"}</td>
                   <td>
                     <span className={`badge ${member.active ? "badge-success" : "badge-muted"}`}>
                       {member.active ? "Active" : "Inactive"}
@@ -265,7 +255,7 @@ function InviteDialog({
           <>
             <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
             <button type="submit" form="invite-form" className="btn btn-primary" disabled={pending}>
-              {pending ? "Creatingâ€¦" : "Create invitation"}
+              {pending ? "Creating…" : "Create invitation"}
             </button>
           </>
         )
@@ -398,7 +388,7 @@ function MemberDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="member-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : "Save changes"}
+            {pending ? "Saving…" : "Save changes"}
           </button>
         </>
       }
@@ -443,7 +433,7 @@ function MemberDialog({
             <label>Account status</label>
             <label className="switch">
               <input type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} />
-              <span>{active ? "Active â€” can sign in" : "Inactive â€” access revoked"}</span>
+              <span>{active ? "Active — can sign in" : "Inactive — access revoked"}</span>
             </label>
           </div>
         </div>
@@ -468,7 +458,7 @@ function MemberDialog({
               return (
                 <label key={permission} className={`perm-row ${overridden ? "overridden" : ""}`}>
                   <input type="checkbox" checked={effective} onChange={(event) => togglePermission(permission, event.target.checked)} />
-                  <span>{permission.replace(".", " Â· ")}</span>
+                  <span>{permission.replace(".", " · ")}</span>
                 </label>
               );
             })}
@@ -478,4 +468,3 @@ function MemberDialog({
     </Modal>
   );
 }
-

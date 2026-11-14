@@ -1,13 +1,3 @@
-# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 import { describe, expect, it } from "vitest";
 import { invoiceInput, refundInput } from "../src/lib/validation";
 
@@ -48,5 +38,24 @@ describe("bill validation", () => {
   it("defaults refund restock to false", () => {
     const parsed = refundInput.parse({ amount: 10, method: "CASH", reason: "unhappy" });
     expect(parsed.restockProducts).toBe(false);
+  });
+});
+
+describe("discount and points input", () => {
+  it("defaults to an amount discount with no points", () => {
+    const parsed = invoiceInput.parse({ branchId, items: [item] });
+    expect(parsed.discountType).toBe("AMOUNT");
+    expect(parsed.redeemPoints).toBe(0);
+  });
+
+  it("accepts a percent discount and points", () => {
+    const parsed = invoiceInput.parse({ branchId, items: [item], discount: 10, discountType: "PERCENT", redeemPoints: 120 });
+    expect(parsed.discountType).toBe("PERCENT");
+    expect(parsed.redeemPoints).toBe(120);
+  });
+
+  it("rejects fractional or negative points", () => {
+    expect(() => invoiceInput.parse({ branchId, items: [item], redeemPoints: 1.5 })).toThrow();
+    expect(() => invoiceInput.parse({ branchId, items: [item], redeemPoints: -1 })).toThrow();
   });
 });

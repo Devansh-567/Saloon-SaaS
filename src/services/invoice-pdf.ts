@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import PDFDocument from "pdfkit";
 import path from "node:path";
 import { existsSync } from "node:fs";
@@ -57,7 +47,7 @@ async function buildInvoicePdf(invoiceId: string, salonId: string) {
   doc.registerFont("Bold", boldFont || "Helvetica-Bold");
   const formatMoney = (value: unknown, currency: string, locale: string) => {
     const text = formatMoneyBase(value, currency, locale);
-    return hasFonts ? text : text.replace(/â‚¹\s?/g, "Rs. ");
+    return hasFonts ? text : text.replace(/₹\s?/g, "Rs. ");
   };
   doc.font("Body").fillColor("#1f2523");
   doc.rect(0, 0, doc.page.width, 10).fill(accent);
@@ -196,4 +186,3 @@ export async function getInvoicePdfDownload(invoiceId: string, context: TenantCo
   const bytes = await buildInvoicePdf(invoiceId, context.salon.id);
   return { bytes, filename: `bill-${invoice.number}.pdf` };
 }
-

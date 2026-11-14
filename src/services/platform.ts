@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import { PlatformRole, Prisma, SalonStatus, SubscriptionStatus, Role } from "@prisma/client";
 import type { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -428,4 +418,3 @@ export async function listNotificationLogs(input: { page: number; pageSize: numb
 export async function listSalonOptions() {
   return prisma.salon.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -164,7 +154,7 @@ export function AttendanceBoard({
           </button>
           {canWrite && items.length ? (
             <button type="button" className="btn btn-secondary btn-sm" onClick={markEveryonePresent} disabled={bulkPending}>
-              {bulkPending ? "Savingâ€¦" : "Everyone present"}
+              {bulkPending ? "Saving…" : "Everyone present"}
             </button>
           ) : null}
         </div>
@@ -191,7 +181,7 @@ export function AttendanceBoard({
                       <span className="avatar" style={{ background: row.color || undefined }}>{initials(row.name)}</span>
                       <span>
                         <span className="cell-title">{row.name}</span>
-                        <span className="cell-sub">{row.jobTitle || row.role}{row.branch ? ` Â· ${row.branch}` : ""}</span>
+                        <span className="cell-sub">{row.jobTitle || row.role}{row.branch ? ` · ${row.branch}` : ""}</span>
                       </span>
                     </div>
                   </td>
@@ -247,7 +237,7 @@ export function AttendanceBoard({
                     <td>
                       <div className="actions">
                         <button type="button" className="btn btn-primary btn-sm" onClick={() => save(row)} disabled={pendingId === row.membershipId}>
-                          {pendingId === row.membershipId ? "Savingâ€¦" : "Save"}
+                          {pendingId === row.membershipId ? "Saving…" : "Save"}
                         </button>
                         {row.recordId ? (
                           <button type="button" className="icon-btn" title="Clear record" onClick={() => clear(row)} disabled={pendingId === row.membershipId}>
@@ -268,4 +258,3 @@ export function AttendanceBoard({
     </section>
   );
 }
-

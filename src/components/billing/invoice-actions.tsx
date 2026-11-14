@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -225,11 +215,11 @@ export function InvoiceActions({
         </a>
         {onlinePayments && !closed && invoice.balance > 0 ? (
           <button type="button" className="btn btn-primary" onClick={createPayLink} disabled={linkBusy}>
-            <Icon name="card" /> {linkBusy ? "Please waitâ€¦" : "Get Payment Link"}
+            <Icon name="card" /> {linkBusy ? "Please wait…" : "Get Payment Link"}
           </button>
         ) : null}
         <button type="button" className="btn btn-secondary" onClick={shareOnWhatsApp} disabled={closed || sharing}>
-          <Icon name="send" /> {sharing ? "Openingâ€¦" : "Share on WhatsApp"}
+          <Icon name="send" /> {sharing ? "Opening…" : "Share on WhatsApp"}
         </button>
         {canSend ? (
           <button type="button" className="btn btn-secondary" onClick={() => setSendOpen(true)} disabled={closed}>
@@ -266,7 +256,7 @@ export function InvoiceActions({
               Cancel
             </button>
             <button type="submit" form="payment-form" className="btn btn-primary" disabled={pending}>
-              {pending ? "Recordingâ€¦" : "Record payment"}
+              {pending ? "Recording…" : "Record payment"}
             </button>
           </>
         }
@@ -309,7 +299,7 @@ export function InvoiceActions({
               Cancel
             </button>
             <button type="submit" form="refund-form" className="btn btn-danger" disabled={pending}>
-              {pending ? "Savingâ€¦" : "Give money back"}
+              {pending ? "Saving…" : "Give money back"}
             </button>
           </>
         }
@@ -411,4 +401,3 @@ export function InvoiceActions({
     </>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { Prisma, PlatformRole, type Salon, type Session, type User, type Membership, type Branch } from "@prisma/client";
@@ -225,4 +215,3 @@ export async function destroySession() {
 export async function revokeOtherSessions(userId: string, currentSessionId: string) {
   await prisma.session.deleteMany({ where: { userId, id: { not: currentSessionId } } });
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -201,7 +191,7 @@ export function RolePermissionEditor({
                 Reset to standard
               </button>
               <button type="button" className="btn btn-primary" onClick={save} disabled={!canSave || pending}>
-                {pending ? "Savingâ€¦" : "Save access"}
+                {pending ? "Saving…" : "Save access"}
               </button>
             </div>
           </div>
@@ -222,4 +212,3 @@ export function RolePermissionEditor({
     </div>
   );
 }
-

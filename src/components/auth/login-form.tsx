@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { AuthBrand } from "@/components/brand/auth-brand";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -63,7 +53,7 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
           <Link href="/forgot-password" className="link">Forgot password?</Link>
         </div>
         <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 14 }} disabled={pending}>
-          {pending ? "Signing inâ€¦" : "Sign in"}
+          {pending ? "Signing in…" : "Sign in"}
         </button>
       </form>
       <p className="auth-footer">
@@ -75,4 +65,3 @@ export function LoginForm({ next, initialError }: { next?: string; initialError?
     </div>
   );
 }
-

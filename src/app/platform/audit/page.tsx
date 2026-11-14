@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { listAuditLogs, listSalonOptions } from "@/services/platform";
 import { formatDate } from "@/lib/utils";
@@ -83,13 +73,13 @@ export default async function PlatformAuditPage({
                       <td>{formatDate(log.createdAt, "UTC", "en-US")}</td>
                       <td>{log.actor}</td>
                       <td><span className="cell-title">{log.action}</span></td>
-                      <td className="hide-mobile">{log.entityType}{log.entityId ? ` Â· ${log.entityId.slice(-6)}` : ""}</td>
+                      <td className="hide-mobile">{log.entityType}{log.entityId ? ` · ${log.entityId.slice(-6)}` : ""}</td>
                       <td>{log.salon}</td>
                       <td className="hide-mobile">
                         {log.metadata && Object.keys(log.metadata as object).length ? (
                           <code className="meta-code">{JSON.stringify(log.metadata)}</code>
                         ) : (
-                          "â€”"
+                          "—"
                         )}
                       </td>
                     </tr>
@@ -110,4 +100,3 @@ export default async function PlatformAuditPage({
     </div>
   );
 }
-

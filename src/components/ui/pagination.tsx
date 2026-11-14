@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import Link from "next/link";
+import Link from "next/link";
 
 export function Pagination({
   page,
@@ -45,7 +35,7 @@ export function Pagination({
   return (
     <div className="pagination">
       <span>
-        {total} result{total === 1 ? "" : "s"} Â· page {page} of {pages}
+        {total} result{total === 1 ? "" : "s"} · page {page} of {pages}
       </span>
       <div className="pager">
         {page > 1 ? <Link href={href(page - 1)}>Prev</Link> : <span aria-disabled="true">Prev</span>}
@@ -55,4 +45,3 @@ export function Pagination({
     </div>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import "server-only";
+import "server-only";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -17,7 +7,6 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   APP_SECRET: z.string().min(32),
   MFA_ENCRYPTION_KEY: z.string().min(32),
-  STORAGE_ROOT: z.string().min(1).default("./storage"),
   MAX_UPLOAD_MB: z.coerce.number().int().positive().max(25).default(5),
   SESSION_TTL_HOURS: z.coerce.number().int().positive().default(12),
   SESSION_IDLE_MINUTES: z.coerce.number().int().positive().default(120),
@@ -30,6 +19,8 @@ const envSchema = z.object({
     .transform((v) => v === "true"),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
+  SMTP_PASSWORD: z.string().optional(),
+  BREVO_API_KEY: z.string().optional(),
   MAIL_FROM: z.string().optional(),
   TWILIO_ACCOUNT_SID: z.string().optional(),
   TWILIO_AUTH_TOKEN: z.string().optional(),
@@ -48,4 +39,3 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
-

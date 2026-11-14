@@ -1,28 +1,22 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/lib/client";
 import { Icon } from "@/components/ui/icons";
 
-type CustomerOption = { id: string; name: string; phone: string; email: string | null };
+export type CustomerOption = { id: string; name: string; phone: string; email: string | null; loyaltyPoints?: number };
 type CustomerList = { items: CustomerOption[] };
 
 export function CustomerPicker({
   initial,
   required = true,
+  allowNew = false,
+  onSelect,
 }: {
   initial?: CustomerOption | null;
   required?: boolean;
+  allowNew?: boolean;
+  onSelect?: (customer: CustomerOption | null) => void;
 }) {
   const [query, setQuery] = useState(initial?.name || "");
   const [selected, setSelected] = useState<CustomerOption | null>(initial || null);
@@ -59,12 +53,14 @@ export function CustomerPicker({
 
   function choose(customer: CustomerOption) {
     setSelected(customer);
+    onSelect?.(customer);
     setQuery(customer.name);
     setOpen(false);
   }
 
   function clear() {
     setSelected(null);
+    onSelect?.(null);
     setQuery("");
     setResults([]);
     setOpen(true);
@@ -74,6 +70,7 @@ export function CustomerPicker({
     <div className="field" ref={wrap} style={{ position: "relative" }}>
       <label htmlFor="customer-search">Customer</label>
       <input type="hidden" name="customerId" value={selected?.id || ""} />
+      {allowNew ? <input type="hidden" name="newCustomerName" value={selected ? "" : query.trim()} /> : null}
       <div style={{ position: "relative" }}>
         <input
           id="customer-search"
@@ -82,6 +79,7 @@ export function CustomerPicker({
           onChange={(event) => {
             setQuery(event.target.value);
             setSelected(null);
+            onSelect?.(null);
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
@@ -101,16 +99,19 @@ export function CustomerPicker({
           </button>
         ) : null}
       </div>
+      {allowNew && !selected && query.trim() ? (
+        <small>Not in the list? We will save &quot;{query.trim()}&quot; as a new customer. You can add the phone number later.</small>
+      ) : null}
       {selected ? (
         <small>
           {selected.phone}
-          {selected.email ? ` Â· ${selected.email}` : ""}
+          {selected.email ? ` · ${selected.email}` : ""}
         </small>
       ) : null}
       {open && !selected ? (
         <div className="dropdown" style={{ left: 0, right: 0, width: "auto", top: "calc(100% - 2px)", maxHeight: 260, overflowY: "auto" }}>
           {loading ? (
-            <div className="dropdown-label">Searchingâ€¦</div>
+            <div className="dropdown-label">Searching…</div>
           ) : results.length ? (
             results.map((customer) => (
               <button type="button" key={customer.id} className="dropdown-item" onMouseDown={() => choose(customer)}>
@@ -131,4 +132,3 @@ export function CustomerPicker({
     </div>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -158,17 +148,17 @@ export function ServicesPanel({
                       <div className="cell-title">{service.name}</div>
                       {service.productUsage.length ? (
                         <div className="cell-sub">
-                          Uses {service.productUsage.map((usage) => `${usage.name} Ã—${usage.quantity}`).join(", ")}
+                          Uses {service.productUsage.map((usage) => `${usage.name} ×${usage.quantity}`).join(", ")}
                         </div>
                       ) : service.description ? (
                         <div className="cell-sub">{service.description}</div>
                       ) : null}
                     </td>
-                    <td>{service.category?.name || "â€”"}</td>
+                    <td>{service.category?.name || "—"}</td>
                     <td className="num">{service.durationMin} min</td>
                     <td className="num">{formatMoney(service.price, currency, locale)}</td>
-                    <td className="hide-mobile">{service.taxRate ? `${service.taxRate.name} (${service.taxRate.rate}%)` : "â€”"}</td>
-                    <td className="hide-mobile num">{service.commissionRate === null ? "â€”" : `${service.commissionRate}%`}</td>
+                    <td className="hide-mobile">{service.taxRate ? `${service.taxRate.name} (${service.taxRate.rate}%)` : "—"}</td>
+                    <td className="hide-mobile num">{service.commissionRate === null ? "—" : `${service.commissionRate}%`}</td>
                     <td>
                       <span className={`badge ${service.active ? "badge-success" : "badge-muted"}`}>
                         {service.active ? "Active" : "Inactive"}
@@ -357,7 +347,7 @@ function ServiceDialog({
         <>
           <button type="button" className="btn btn-secondary" onClick={onClose} disabled={pending}>Cancel</button>
           <button type="submit" form="service-form" className="btn btn-primary" disabled={pending}>
-            {pending ? "Savingâ€¦" : service ? "Save changes" : "Create service"}
+            {pending ? "Saving…" : service ? "Save changes" : "Create service"}
           </button>
         </>
       }
@@ -546,7 +536,7 @@ function CategoriesDialog({ categories, onClose }: { categories: Category[]; onC
         onClose={() => setRemoving(null)}
         onConfirm={() => removing && remove(removing)}
         title="Delete category?"
-        message={removing ? `Services in â€œ${removing.name}â€ become uncategorized. This cannot be undone.` : ""}
+        message={removing ? `Services in “${removing.name}” become uncategorized. This cannot be undone.` : ""}
         confirmLabel="Delete"
         danger
         pending={pending}
@@ -628,4 +618,3 @@ function TaxesDialog({ taxRates, onClose }: { taxRates: TaxRate[]; onClose: () =
     </Modal>
   );
 }
-

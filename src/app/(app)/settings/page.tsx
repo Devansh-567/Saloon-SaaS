@@ -1,14 +1,6 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import { LoyaltyPanel } from "@/components/settings/loyalty-panel";
+import { parseLoyaltyRules } from "@/lib/loyalty";
+import type { Metadata } from "next";
 import { requireTenantPage } from "@/lib/guards";
 import { hasPermission } from "@/lib/auth";
 import { getSalonSettingsData } from "@/services/salon-config";
@@ -58,6 +50,16 @@ export default async function SettingsPage() {
         canWrite={canWrite}
       />
 
+      <LoyaltyPanel
+        salonRules={data.salon.settings.loyalty}
+        branches={data.branches.map((branch) => ({
+          id: branch.id,
+          name: branch.name,
+          custom: branch.loyalty ? parseLoyaltyRules(branch.loyalty, data.salon.settings.loyalty) : null,
+        }))}
+        canWrite={canWrite}
+      />
+
       {data.subscription ? (
         <section className="card">
           <div className="card-head">
@@ -81,19 +83,19 @@ export default async function SettingsPage() {
               <div className="stat-card">
                 <div className="stat-top"><span>Trial ends</span></div>
                 <div className="stat-value" style={{ fontSize: 20 }}>
-                  {data.subscription.trialEndsAt ? formatDay(data.subscription.trialEndsAt, context.salon.timezone, context.salon.locale) : "â€”"}
+                  {data.subscription.trialEndsAt ? formatDay(data.subscription.trialEndsAt, context.salon.timezone, context.salon.locale) : "—"}
                 </div>
                 <div className="stat-foot">After this date, billing begins</div>
               </div>
               <div className="stat-card">
                 <div className="stat-top"><span>Current period</span></div>
                 <div className="stat-value" style={{ fontSize: 20 }}>
-                  {data.subscription.currentPeriodEnd ? formatDay(data.subscription.currentPeriodEnd, context.salon.timezone, context.salon.locale) : "â€”"}
+                  {data.subscription.currentPeriodEnd ? formatDay(data.subscription.currentPeriodEnd, context.salon.timezone, context.salon.locale) : "—"}
                 </div>
                 <div className="stat-foot">
                   {Object.entries(data.subscription.plan.limits || {})
                     .map(([key, value]) => `${key.replace("max", "max ").toLowerCase()}: ${value}`)
-                    .join(" Â· ") || "No limits"}
+                    .join(" · ") || "No limits"}
                 </div>
               </div>
             </div>
@@ -115,4 +117,3 @@ export default async function SettingsPage() {
     </div>
   );
 }
-

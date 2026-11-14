@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,14 +6,15 @@ import { apiRequest, errorMessage } from "@/lib/client";
 import { calculateInvoice } from "@/lib/invoice-calc";
 import { formatMoney, paymentMethodLabel, roundMoney } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast";
-import { CustomerPicker } from "@/components/forms/customer-picker";
+import { CustomerPicker, type CustomerOption } from "@/components/forms/customer-picker";
+import { maxRedeemablePoints, redemptionValue, type LoyaltyRules } from "@/lib/loyalty";
 import { Icon } from "@/components/ui/icons";
 
 type Service = { id: string; name: string; price: number; active: boolean; taxRate: { rate: number } | null };
 type Product = { id: string; name: string; price: number; stockQty: number; unit: string; active: boolean; taxRate: { rate: number } | null };
 type Staff = { id: string; name: string };
 type Branch = { id: string; name: string; active: boolean };
-type Customer = { id: string; name: string; phone: string; email: string | null };
+type Customer = CustomerOption;
 
 type Line = {
   key: number;
@@ -45,6 +36,7 @@ export function InvoiceBuilder({
   staff,
   branches,
   initialCustomer,
+  branchRules,
   currency,
   locale,
 }: {
@@ -53,6 +45,7 @@ export function InvoiceBuilder({
   staff: Staff[];
   branches: Branch[];
   initialCustomer?: Customer | null;
+  branchRules: Record<string, LoyaltyRules>;
   currency: string;
   locale: string;
 }) {
@@ -60,6 +53,9 @@ export function InvoiceBuilder({
   const toast = useToast();
   const [lines, setLines] = useState<Line[]>([{ key: lineKey++, kind: "SERVICE", serviceId: "", productId: "", staffMembershipId: "", quantity: 1 }]);
   const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState<"AMOUNT" | "PERCENT">("AMOUNT");
+  const [customer, setCustomer] = useState<Customer | null>(initialCustomer || null);
+  const [redeemPoints, setRedeemPoints] = useState(0);
   const [branchId, setBranchId] = useState(branches.find((branch) => branch.active)?.id || "");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -71,26 +67,43 @@ export function InvoiceBuilder({
   const serviceMap = useMemo(() => new Map(services.map((service) => [service.id, service])), [services]);
   const productMap = useMemo(() => new Map(products.map((product) => [product.id, product])), [products]);
 
+  const pricedLines = useMemo(
+    () =>
+      lines
+        .map((line) => {
+          if (line.kind === "SERVICE") {
+            const service = serviceMap.get(line.serviceId);
+            if (!service) return null;
+            return { quantity: line.quantity, unitPrice: service.price, taxRate: service.taxRate?.rate || 0, commissionRate: 0 };
+          }
+          const product = productMap.get(line.productId);
+          if (!product) return null;
+          return { quantity: line.quantity, unitPrice: product.price, taxRate: product.taxRate?.rate || 0, commissionRate: 0 };
+        })
+        .filter((line): line is { quantity: number; unitPrice: number; taxRate: number; commissionRate: number } => Boolean(line)),
+    [lines, serviceMap, productMap],
+  );
+
+  const grossSubtotal = useMemo(
+    () => roundMoney(pricedLines.reduce((sum, line) => sum + roundMoney(line.quantity * line.unitPrice), 0)),
+    [pricedLines],
+  );
+
+  const rules = branchRules[branchId];
+  const balance = customer?.loyaltyPoints || 0;
+  const allowedPoints = rules ? maxRedeemablePoints(balance, grossSubtotal, rules) : 0;
+  const usedPoints = Math.min(redeemPoints, allowedPoints);
+  const pointsValue = rules ? redemptionValue(usedPoints, rules) : 0;
+  const manualDiscount = discountType === "PERCENT" ? roundMoney((grossSubtotal * Math.min(discount, 100)) / 100) : discount;
+
   const calculated = useMemo(() => {
-    const input = lines
-      .map((line) => {
-        if (line.kind === "SERVICE") {
-          const service = serviceMap.get(line.serviceId);
-          if (!service) return null;
-          return { quantity: line.quantity, unitPrice: service.price, taxRate: service.taxRate?.rate || 0, commissionRate: 0 };
-        }
-        const product = productMap.get(line.productId);
-        if (!product) return null;
-        return { quantity: line.quantity, unitPrice: product.price, taxRate: product.taxRate?.rate || 0, commissionRate: 0 };
-      })
-      .filter((line): line is { quantity: number; unitPrice: number; taxRate: number; commissionRate: number } => Boolean(line));
-    if (!input.length) return null;
+    if (!pricedLines.length) return null;
     try {
-      return calculateInvoice(input, discount);
+      return calculateInvoice(pricedLines, roundMoney(manualDiscount + pointsValue));
     } catch {
       return null;
     }
-  }, [lines, discount, serviceMap, productMap]);
+  }, [pricedLines, manualDiscount, pointsValue]);
 
   function updateLine(key: number, patch: Partial<Line>) {
     setLines((current) => current.map((line) => (line.key === key ? { ...line, ...patch } : line)));
@@ -162,6 +175,8 @@ export function InvoiceBuilder({
             .map((row) => ({ method: row.method, amount: Number(row.amount) })),
           branchId,
           discount: Number(discount) || 0,
+          discountType,
+          redeemPoints: usedPoints,
           notes: form.get("notes") || undefined,
           items: payloadLines,
         }),
@@ -187,12 +202,24 @@ export function InvoiceBuilder({
             {error ? <div className="alert alert-error">{error}</div> : null}
             <div className="form-grid">
               <div>
-                <CustomerPicker initial={initialCustomer} required={false} />
+                <CustomerPicker
+                  initial={initialCustomer}
+                  required={false}
+                  onSelect={(selected) => {
+                    setCustomer(selected);
+                    setRedeemPoints(0);
+                  }}
+                />
                 <small>No saved profile? Leave this empty.</small>
               </div>
               <div className="field">
                 <label htmlFor="branchId">Branch</label>
-                <select id="branchId" className="select" value={branchId} onChange={(event) => setBranchId(event.target.value)} required>
+                <select id="branchId" className="select" value={branchId} onChange={(event) => {
+                    setBranchId(event.target.value);
+                    setRedeemPoints(0);
+                  }}
+                  required
+                >
                   {branches.filter((branch) => branch.active).map((branch) => (
                     <option key={branch.id} value={branch.id}>
                       {branch.name}
@@ -232,7 +259,7 @@ export function InvoiceBuilder({
                           <option value="">Choose service</option>
                           {services.filter((item) => item.active).map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.name} Â· {formatMoney(item.price, currency, locale)}
+                              {item.name} · {formatMoney(item.price, currency, locale)}
                             </option>
                           ))}
                         </select>
@@ -246,7 +273,7 @@ export function InvoiceBuilder({
                           <option value="">Choose product</option>
                           {products.filter((item) => item.active).map((item) => (
                             <option key={item.id} value={item.id} disabled={item.stockQty <= 0}>
-                              {item.name} Â· {formatMoney(item.price, currency, locale)} Â· {item.stockQty} {item.unit}
+                              {item.name} · {formatMoney(item.price, currency, locale)} · {item.stockQty} {item.unit}
                             </option>
                           ))}
                         </select>
@@ -321,19 +348,66 @@ export function InvoiceBuilder({
           </div>
           <div className="card-body">
             <div className="field" style={{ marginBottom: 14 }}>
-              <label htmlFor="discount">Discount (amount)</label>
-              <input
-                id="discount"
-                type="number"
-                className="input"
-                min={0}
-                step="0.01"
-                value={discount || ""}
-                onChange={(event) => setDiscount(Number(event.target.value) || 0)}
-                placeholder="0.00"
-              />
-              <small>Shared across all items.</small>
+              <label htmlFor="discount">Discount</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <select
+                  className="select"
+                  aria-label="Discount type"
+                  style={{ maxWidth: 120 }}
+                  value={discountType}
+                  onChange={(event) => setDiscountType(event.target.value as "AMOUNT" | "PERCENT")}
+                >
+                  <option value="AMOUNT">Amount</option>
+                  <option value="PERCENT">Percent %</option>
+                </select>
+                <input
+                  id="discount"
+                  type="number"
+                  className="input"
+                  min={0}
+                  max={discountType === "PERCENT" ? 100 : undefined}
+                  step="0.01"
+                  inputMode="decimal"
+                  value={discount || ""}
+                  onChange={(event) => setDiscount(Number(event.target.value) || 0)}
+                  placeholder={discountType === "PERCENT" ? "0 %" : "0.00"}
+                />
+              </div>
+              <small>
+                {discountType === "PERCENT" ? `Takes off ${formatMoney(manualDiscount, currency, locale)}. ` : ""}Shared across all items.
+              </small>
             </div>
+            {customer && rules?.enabled ? (
+              <div className="field" style={{ marginBottom: 14 }}>
+                <label htmlFor="redeem">Reward points (has {balance})</label>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    id="redeem"
+                    type="number"
+                    className="input"
+                    min={0}
+                    max={allowedPoints}
+                    step={1}
+                    inputMode="numeric"
+                    disabled={allowedPoints === 0}
+                    value={usedPoints || ""}
+                    onChange={(event) => setRedeemPoints(Math.max(0, Math.floor(Number(event.target.value) || 0)))}
+                    placeholder="0"
+                  />
+                  <button type="button" className="btn btn-secondary" disabled={allowedPoints === 0} onClick={() => setRedeemPoints(allowedPoints)}>
+                    Use max
+                  </button>
+                </div>
+                <small>
+                  {allowedPoints > 0
+                    ? `1 point = ${formatMoney(rules.valuePerPoint, currency, locale)}. Using ${usedPoints} points takes off ${formatMoney(pointsValue, currency, locale)}.`
+                    : balance < rules.minRedeemPoints
+                      ? `Points can be used from ${rules.minRedeemPoints} points.`
+                      : "Add items to the bill to use points."}
+                  {rules.perks ? ` ${rules.perks}` : ""}
+                </small>
+              </div>
+            ) : null}
             <div className="totals-box" style={{ width: "100%" }}>
               <div>
                 <span>Subtotal</span>
@@ -341,7 +415,7 @@ export function InvoiceBuilder({
               </div>
               <div>
                 <span>Discount</span>
-                <span>âˆ’{formatMoney(calculated?.discount || 0, currency, locale)}</span>
+                <span>−{formatMoney(calculated?.discount || 0, currency, locale)}</span>
               </div>
               <div>
                 <span>Tax</span>
@@ -357,7 +431,7 @@ export function InvoiceBuilder({
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {(["CASH", "UPI", "CARD"] as const).map((method) => (
                   <button key={method} type="button" className="btn btn-secondary btn-sm" onClick={() => payInFull(method)} disabled={!billTotal}>
-                    Paid in full Â· {paymentMethodLabel(method)}
+                    Paid in full · {paymentMethodLabel(method)}
                   </button>
                 ))}
               </div>
@@ -390,7 +464,7 @@ export function InvoiceBuilder({
             </div>
             <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 16 }} disabled={pending}>
               <Icon name="check" />
-              {pending ? "Saving billâ€¦" : paidNow > 0 && balanceDue <= 0 ? "Complete bill" : "Save bill"}
+              {pending ? "Saving bill…" : paidNow > 0 && balanceDue <= 0 ? "Complete bill" : "Save bill"}
             </button>
             <p className="hint" style={{ marginTop: 10, textAlign: "center" }}>
               Bill numbers are given automatically.
@@ -401,4 +475,3 @@ export function InvoiceBuilder({
     </form>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- "use client";
+"use client";
 
 import { AuthBrand } from "@/components/brand/auth-brand";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -103,7 +93,7 @@ export function InviteForm({
           <div className="alert alert-success">Signed in as {email}. Accept the invitation to add this salon to your account.</div>
         )}
         <button type="submit" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 20 }} disabled={pending}>
-          {pending ? "Joiningâ€¦" : `Accept and join ${salonName}`}
+          {pending ? "Joining…" : `Accept and join ${salonName}`}
         </button>
       </form>
       <p className="auth-footer">
@@ -112,4 +102,3 @@ export function InviteForm({
     </div>
   );
 }
-

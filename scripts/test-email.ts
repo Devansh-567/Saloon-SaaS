@@ -1,45 +1,45 @@
-# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
 import "dotenv/config";
 import nodemailer from "nodemailer";
 
 async function main() {
   const to = process.argv[2];
-  const { SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, MAIL_FROM } = process.env;
+  const { BREVO_API_KEY, SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, SMTP_PASSWORD, MAIL_FROM } = process.env;
   if (!to) {
     console.log("Usage: npm run email:test -- you@example.com");
     process.exit(1);
   }
-  if (!SMTP_HOST || !MAIL_FROM) {
-    console.error("SMTP_HOST and MAIL_FROM are not set. Fill them in your environment settings first.");
+  if (!MAIL_FROM || (!BREVO_API_KEY && !SMTP_HOST)) {
+    console.error("Set MAIL_FROM and either BREVO_API_KEY or SMTP_HOST first.");
     process.exit(1);
   }
+  const subject = "Test email from your salon software";
+  const text = "Good news: your email settings work.";
+  if (BREVO_API_KEY) {
+    const match = /^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/.exec(MAIL_FROM);
+    const sender = match ? { name: match[1].trim() || undefined, email: match[2].trim() } : { email: MAIL_FROM.trim() };
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "api-key": BREVO_API_KEY, "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ sender, to: [{ email: to }], subject, textContent: text }),
+    });
+    const data = (await response.json().catch(() => null)) as { message?: string } | null;
+    if (!response.ok) throw new Error(`Brevo said: ${data?.message || response.status}`);
+    console.log(`Test email sent to ${to} through Brevo. Check the inbox and spam folder.`);
+    return;
+  }
+  const port = Number(SMTP_PORT) || 587;
   const transport = nodemailer.createTransport({
     host: SMTP_HOST,
-    port: Number(SMTP_PORT) || 587,
-    secure: SMTP_SECURE === "true",
-    ...(SMTP_USER ? { auth: { user: SMTP_USER, pass: SMTP_PASS } } : {}),
+    port,
+    secure: SMTP_SECURE === "true" || port === 465,
+    ...(SMTP_USER ? { auth: { user: SMTP_USER, pass: SMTP_PASS || SMTP_PASSWORD } } : {}),
   });
   await transport.verify();
-  const result = await transport.sendMail({
-    from: MAIL_FROM,
-    to,
-    subject: "Test email from your salon software",
-    text: "Good news: your email settings work. Password reset emails will now be delivered.",
-  });
-  console.log(result.accepted.length ? `Test email sent to ${to}. Check the inbox (and spam folder).` : "The mail server did not accept the email.");
+  await transport.sendMail({ from: MAIL_FROM, to, subject, text });
+  console.log(`Test email sent to ${to}. Check the inbox and spam folder.`);
 }
 
 main().catch((error) => {
   console.error("Email test failed:", error instanceof Error ? error.message : error);
-  console.error("Check: host, port (587 with SMTP_SECURE=false, or 465 with SMTP_SECURE=true), user, and app password.");
   process.exit(1);
 });

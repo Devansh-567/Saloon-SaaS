@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { AppointmentStatus } from "@prisma/client";
 import { requireTenantPage } from "@/lib/guards";
@@ -127,11 +117,11 @@ export default async function AppointmentsPage({
                   </div>
                   <div className="agenda-main">
                     <strong>
-                      {appointment.customer.name} <span style={{ fontWeight: 400, color: "var(--muted)" }}>Â· {appointment.service.name}</span>
+                      {appointment.customer.name} <span style={{ fontWeight: 400, color: "var(--muted)" }}>· {appointment.service.name}</span>
                     </strong>
                     <span>
-                      {appointment.staff.name} Â· {appointment.branch.name}
-                      {appointment.walkIn ? " Â· no booking" : ""}
+                      {appointment.staff.name} · {appointment.branch.name}
+                      {appointment.walkIn ? " · no booking" : ""}
                     </span>
                     {appointment.notes ? <span style={{ marginTop: 2 }}>{appointment.notes}</span> : null}
                   </div>
@@ -139,6 +129,7 @@ export default async function AppointmentsPage({
                     <StatusBadge status={appointment.status} />
                     {canWrite ? (
                       <>
+                        {["SCHEDULED", "CONFIRMED", "CHECKED_IN", "IN_PROGRESS"].includes(appointment.status) ? (
                         <AppointmentDialog
                           services={settings.services}
                           staff={settings.staff}
@@ -156,6 +147,7 @@ export default async function AppointmentsPage({
                             walkIn: appointment.walkIn,
                           }}
                         />
+                        ) : null}
                         <AppointmentActions id={appointment.id} status={appointment.status} />
                       </>
                     ) : null}
@@ -198,4 +190,3 @@ export default async function AppointmentsPage({
     </div>
   );
 }
-

@@ -1,14 +1,4 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { hasPermission } from "@/lib/auth";
@@ -94,7 +84,7 @@ export default async function CustomersPage({
                         ) : customer.preferences ? <div className="cell-sub">{customer.preferences}</div> : null}
                       </td>
                       <td className="hide-mobile">
-                        <div>{customer.phone}</div>
+                        <div>{customer.phone || "Phone not added yet"}</div>
                         {customer.email ? <div className="cell-sub">{customer.email}</div> : null}
                       </td>
                       <td className="num hide-mobile">{customer.totalVisits}</td>
@@ -127,4 +117,3 @@ export default async function CustomersPage({
     </div>
   );
 }
-

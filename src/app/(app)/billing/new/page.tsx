@@ -1,14 +1,6 @@
-﻿# Copyright (c) 2026 Devansh Singh
-# All Rights Reserved.
-#
-# This software and its source code are proprietary
-# and confidential property of Guru AI Technologies.
-#
-# Unauthorized copying, modification, distribution,
-# or use of this software, in whole or in part,
-# is strictly prohibited without prior written
-# permission from Guru AI Technologies.
- import type { Metadata } from "next";
+import { parseLoyaltyRules } from "@/lib/loyalty";
+import { parseSalonSettings } from "@/lib/settings";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireTenantPage } from "@/lib/guards";
 import { getCustomer } from "@/services/customers";
@@ -29,6 +21,7 @@ export default async function NewInvoicePage({ searchParams }: { searchParams: P
     params.customer ? getCustomer(context, params.customer) : Promise.resolve(null),
   ]);
 
+  const salonRules = parseSalonSettings(context.salon.settings).loyalty;
   return (
     <div className="stack" style={{ gap: 20 }}>
       <div className="page-head">
@@ -47,11 +40,17 @@ export default async function NewInvoicePage({ searchParams }: { searchParams: P
         products={products}
         staff={settings.staff}
         branches={settings.branches}
-        initialCustomer={customer ? { id: customer.id, name: customer.name, phone: customer.phone, email: customer.email } : null}
+        initialCustomer={
+          customer
+            ? { id: customer.id, name: customer.name, phone: customer.phone, email: customer.email, loyaltyPoints: customer.loyaltyPoints }
+            : null
+        }
+        branchRules={Object.fromEntries(
+          settings.branches.map((branch) => [branch.id, parseLoyaltyRules(branch.loyalty, salonRules)]),
+        )}
         currency={context.salon.currency}
         locale={context.salon.locale}
       />
     </div>
   );
 }
-
